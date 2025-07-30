@@ -1,0 +1,328 @@
+/* app/globals.css */
+
+/* Basic Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f9f9f9;
+  /* Default background for the app */
+}
+
+/* General Layout for Listing Page */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main-content-wrapper {
+  flex-grow: 1;
+  display: flex;
+  padding-top: 20px;
+  /* Height of the fixed header */
+  overflow: hidden;
+  /* Prevent main content from scrolling */
+}
+
+.main-content {
+  display: flex;
+  flex-grow: 1;
+  overflow: hidden;
+  /* Ensure children manage their own scroll */
+}
+
+.listings-section {
+  flex: 1;
+  /* Take up available space */
+  padding: 20px;
+  overflow-y: auto;
+  /* Only this section should scroll vertically */
+  display: grid;
+  /* grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); Responsive grid */
+  gap: 20px;
+  align-content: flex-start;
+  /* Align items to the start when there's extra space */
+}
+
+.map-section {
+  flex-shrink: 0;
+  /* Prevent map from shrinking */
+  width: 40%;
+  /* Map takes 40% of the width */
+  position: sticky;
+  /* Make map sticky */
+  top: 80px;
+  /* Stick below the header */
+  height: 90%;
+  /* Fill remaining viewport height */
+  overflow: hidden;
+  background-color: #e0e0e0;
+  /* Placeholder background */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+}
+
+.map-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Property Card Styles (for listing page) */
+.property-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.property-card:hover {
+  transform: translateY(-4px);
+}
+
+.image-carousel {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  /* Fixed height for images */
+  overflow: hidden;
+}
+
+.image-carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.image-carousel:hover .carousel-nav {
+  opacity: 1;
+}
+
+.carousel-nav.prev {
+  left: 10px;
+}
+
+.carousel-nav.next {
+  right: 10px;
+}
+
+.image-dots {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+}
+
+.image-dots .dot {
+  width: 8px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.image-dots .dot.active {
+  background: white;
+}
+
+.favorite-button,
+.share-button {
+  position: absolute;
+  top: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  z-index: 10;
+}
+
+.favorite-button {
+  right: 40px;
+}
+
+.share-button {
+  right: 10px;
+}
+
+.property-info {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.property-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.property-name {
+  font-size: 0.95rem;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.property-location {
+  font-size: 0.85rem;
+  color: #777;
+  margin-bottom: 10px;
+}
+
+.property-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  /* Push to bottom */
+  padding-top: 10px;
+  border-top: 1px solid #eee;
+}
+
+.property-details .price {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #cba135;
+}
+
+.property-details .rating {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.9rem;
+  color: #cba135;
+}
+
+.property-amenities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.amenity-tag {
+  background: #e0e0e0;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 0.75rem;
+  color: #555;
+}
+
+.property-provider {
+  font-size: 0.8rem;
+  color: #999;
+  text-align: right;
+  margin-top: 5px;
+}
+
+.no-results-message {
+  grid-column: 1 / -1;
+  /* Span across all columns */
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+/* Loading Spinner */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #f0f0f0;
+  color: #333;
+  font-size: 1.2rem;
+}
+
+.spinner {
+  border: 4px solid rgba(0, 0, 0, 0.1);
+  border-left-color: #cba135;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Responsive adjustments for global layout */
+@media (max-width: 900px) {
+  .main-content-wrapper {
+    flex-direction: column;
+    /* Stack listings and map */
+  }
+
+  .map-section {
+    position: static;
+    /* Remove sticky behavior */
+    width: 100%;
+    /* Full width */
+    height: 300px;
+    /* Fixed height for map on mobile */
+    order: -1;
+    /* Place map above listings on mobile */
+  }
+
+  .listings-section {
+    padding: 15px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  .listings-section {
+    padding: 10px;
+    grid-template-columns: 1fr;
+    /* Single column on very small screens */
+  }
+
+  .property-card {
+    margin-bottom: 15px;
+  }
+}

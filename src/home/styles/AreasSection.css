@@ -1,0 +1,550 @@
+/* Areas Section Styles */
+.areas-section {
+  padding: 80px 0;
+  background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.areas-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23f1f5f9' fill-opacity='0.4'%3E%3Ccircle cx='30' cy='30' r='2'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.section-title {
+  text-align: center;
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 2;
+  background: #cba135;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: titleFadeIn 1s ease-out;
+}
+
+.section-title::after {
+  content: "";
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 4px;
+  background: #cba135;
+  border-radius: 2px;
+  animation: underlineExpand 1s ease-out 0.5s both;
+}
+
+@keyframes titleFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes underlineExpand {
+  from {
+    width: 0;
+  }
+  to {
+    width: 80px;
+  }
+}
+
+/* Areas Container */
+.areas-container {
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  z-index: 2;
+}
+
+.areas-wrapper {
+  overflow: hidden;
+  border-radius: 20px;
+  position: relative;
+  padding: 20px 0;
+}
+
+.areas-slider {
+  display: flex;
+  gap: 20px;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding: 0 20px;
+}
+
+/* Area Card Styles */
+.area-card {
+  min-width: 240px;
+  width: 240px;
+  background: white;
+  border-radius: 20px;
+  overflow: visible;
+  cursor: pointer;
+  transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  position: relative;
+  animation: cardSlideIn 0.6s ease-out;
+  padding: 30px 20px 20px;
+  text-align: center;
+}
+
+.area-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: #fff;
+  box-shadow: rgba(167, 140, 42, 0.096);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+  border-radius: 20px;
+}
+
+.area-card:hover::before {
+  opacity: 1;
+}
+
+.area-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+  border-color: #a78c2a;
+}
+
+/* Area Image - Circular */
+.area-image {
+  width: 160px;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 50%;
+  transition: all 0.4s ease;
+  position: relative;
+  z-index: 2;
+  margin: 0 auto 20px;
+  display: block;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border: 3px solid white;
+}
+
+.area-card:hover .area-image {
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Area Content */
+.area-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0 0 25px 0;
+  position: relative;
+  z-index: 3;
+  transition: color 0.3s ease;
+  line-height: 1.3;
+}
+
+.area-card:hover .area-title {
+  color: #a78c2a;
+}
+
+/* View Properties Button */
+.view-properties-btn {
+  width: 100%;
+  padding: 12px 24px;
+  background: #cba135;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 3;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(167, 140, 42, 0.3);
+}
+
+.view-properties-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: #cba135;
+  transition: left 0.3s ease;
+  z-index: -1;
+}
+
+.area-card:hover .view-properties-btn::before {
+  left: 0;
+}
+
+.view-properties-btn:hover {
+  transform: translateY(-2px);
+  box-shadow:#a78c2a;
+}
+
+.view-properties-btn:active {
+  transform: translateY(0);
+}
+
+/* Navigation Buttons */
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 50px;
+  height: 50px;
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  color: #64748b;
+}
+
+.nav-button:hover:not(:disabled) {
+  background: #cba135;
+  color: white;
+  border-color: #a78c2a;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 8px 25px rgba(167, 140, 42, 0.3);
+}
+
+.nav-button:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.nav-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  background: #f8fafc;
+  color: #cbd5e1;
+}
+
+.nav-button.prev {
+  left: -25px;
+}
+
+.nav-button.next {
+  right: -25px;
+}
+
+/* Loading Animation */
+.area-card.loading {
+  animation: cardPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes cardPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .areas-container {
+    padding: 0 1.5rem;
+  }
+
+  .nav-button.prev {
+    left: -15px;
+  }
+
+  .nav-button.next {
+    right: -15px;
+  }
+}
+
+@media (max-width: 768px) {
+  .areas-section {
+    padding: 60px 0;
+  }
+
+  .section-title {
+    margin-bottom: 2rem;
+  }
+
+  .areas-container {
+    padding: 0 1rem;
+  }
+
+  .areas-slider {
+    gap: 15px;
+    padding: 0 15px;
+  }
+
+  .area-card {
+    min-width: 200px;
+    width: 200px;
+    padding: 25px 15px 15px;
+  }
+
+  .area-image {
+    width: 100px;
+    height: 100px;
+    margin-bottom: 15px;
+  }
+
+  .area-title {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .view-properties-btn {
+    padding: 10px 20px;
+    font-size: 13px;
+  }
+
+  .nav-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .nav-button.prev {
+    left: -10px;
+  }
+
+  .nav-button.next {
+    right: -10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .areas-section {
+    padding: 40px 0;
+  }
+
+  .areas-container {
+    padding: 0 0.5rem;
+  }
+
+  .areas-slider {
+    gap: 12px;
+    padding: 0 12px;
+  }
+
+  .area-card {
+    min-width: 180px;
+    width: 180px;
+    padding: 20px 12px 12px;
+  }
+
+  .area-image {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 12px;
+  }
+
+  .area-title {
+    font-size: 15px;
+    margin-bottom: 15px;
+  }
+
+  .view-properties-btn {
+    padding: 8px 16px;
+    font-size: 12px;
+  }
+
+  .nav-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .nav-button.prev {
+    left: -8px;
+  }
+
+  .nav-button.next {
+    right: -8px;
+  }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .area-card:hover {
+    transform: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .area-card:hover .area-image {
+    transform: none;
+    filter: none;
+  }
+
+  .area-card:hover .area-title {
+    color: #1e293b;
+  }
+
+  .area-card:hover::before {
+    opacity: 0;
+  }
+
+  .area-card:hover .view-properties-btn::before {
+    left: -100%;
+  }
+
+  .area-card:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .areas-slider,
+  .area-card,
+  .nav-button,
+  .view-properties-btn,
+  .area-image {
+    transition: none;
+    animation: none;
+  }
+
+  .section-title {
+    animation: none;
+  }
+
+  .section-title::after {
+    animation: none;
+    width: 80px;
+  }
+}
+
+/* Focus States */
+.area-card:focus,
+.nav-button:focus,
+.view-properties-btn:focus {
+  outline: 2px solid #d97706;
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .area-card {
+    border: 2px solid #000;
+  }
+
+  .nav-button {
+    border: 2px solid #000;
+  }
+
+  .view-properties-btn {
+    background: #000;
+    border: 2px solid #000;
+  }
+}
+
+/* Print Styles */
+@media print {
+  .nav-button {
+    display: none;
+  }
+
+  .areas-slider {
+    transform: none !important;
+    flex-wrap: wrap;
+  }
+
+  .area-card {
+    break-inside: avoid;
+    margin-bottom: 20px;
+  }
+}
+
+/* Custom Scrollbar for horizontal scroll fallback */
+.areas-wrapper::-webkit-scrollbar {
+  height: 6px;
+}
+
+.areas-wrapper::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.areas-wrapper::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.areas-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Smooth scroll behavior */
+.areas-slider {
+  scroll-behavior: smooth;
+}
+
+/* Loading skeleton animation */
+.area-card.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Enhanced card interactions */
+.area-card {
+  transform-origin: center;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Staggered animation for cards */
+.area-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+.area-card:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.area-card:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.area-card:nth-child(4) {
+  animation-delay: 0.4s;
+}
+.area-card:nth-child(5) {
+  animation-delay: 0.5s;
+}
+.area-card:nth-child(6) {
+  animation-delay: 0.6s;
+}

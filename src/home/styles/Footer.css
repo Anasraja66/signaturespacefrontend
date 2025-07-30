@@ -1,0 +1,203 @@
+/* Footer Section Styles */
+.footer {
+  margin-top: 10px;
+  background: #2c2c2c; /* Dark gradient for better alignment */
+  color: #e2e8f0; /* Light text color */
+  padding: 60px 20px 30px; /* Ample padding */
+  font-family: "Inter", sans-serif; /* Consistent font */
+}
+
+.footer-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid for sections */
+  gap: 40px; /* Space between sections */
+  margin-bottom: 50px; /* Space above copyright */
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #f59e0b; /* Orange accent for titles */
+  margin-bottom: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: 12px; /* Space between links */
+}
+
+.footer-link {
+  color: #cbd5e1; /* Lighter gray for links */
+  text-decoration: none;
+  font-size: 15px;
+  transition: color 0.2s ease, transform 0.2s ease;
+  display: inline-block; /* Allows transform */
+}
+
+.footer-link:hover {
+  color: #a78c2a; /* Orange on hover */
+  transform: translateX(5px); /* Subtle slide effect */
+}
+
+/* Social Links */
+.social-links {
+  display: flex;
+  gap: 15px; /* Space between social buttons */
+  margin-top: 10px;
+}
+
+.social-link {
+  background: #2d3748; /* Darker background for buttons */
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: #cbd5e1; /* Icon color */
+}
+
+.social-link:hover {
+  background: #cba135; /* Orange gradient on hover */
+  color: white; /* White icon on hover */
+  transform: translateY(-3px) scale(1.05); /* Lift and slight scale */
+  box-shadow: #a78c2a;
+}
+
+/* Footer Bottom (Copyright) */
+.footer-bottom {
+  border-top: 1px solid #2d3748; /* Darker separator line */
+  padding-top: 30px;
+  text-align: center;
+  font-size: 14px;
+  color: #94a3b8; /* Lighter gray for copyright text */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr; /* Stack sections on smaller screens */
+    text-align: center; /* Center align text */
+    gap: 30px;
+  }
+
+  .footer-section-title {
+    margin-bottom: 15px;
+  }
+
+  .footer-links li {
+    margin-bottom: 10px;
+  }
+
+  .footer-link:hover {
+    transform: none; /* Disable slide effect on touch devices */
+  }
+
+  .social-links {
+    justify-content: center; /* Center social icons */
+  }
+
+  .footer-bottom {
+    padding-top: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer {
+    padding: 40px 15px 20px;
+  }
+
+  .footer-content {
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+
+  .footer-section-title {
+    font-size: 16px;
+  }
+
+  .footer-link {
+    font-size: 14px;
+  }
+
+  .social-link {
+    width: 36px;
+    height: 36px;
+  }
+
+  .footer-bottom {
+    font-size: 13px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .footer-link,
+  .social-link {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Focus States */
+.footer-link:focus,
+.social-link:focus {
+  outline: 2px solid #f59e0b;
+  outline-offset: 3px;
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .footer {
+    background: #000;
+    color: #fff;
+  }
+
+  .footer-section-title {
+    color: #fff;
+  }
+
+  .footer-link {
+    color: #fff;
+  }
+
+  .footer-link:hover {
+    color:#a78c2a;
+  }
+
+  .social-link {
+    background: #333;
+    color: #fff;
+    border: 1px solid #fff;
+  }
+
+  .social-link:hover {
+    background: #a78c2a;
+    color: #000;
+  }
+
+  .footer-bottom {
+    border-top-color: #fff;
+    color: #fff;
+  }
+}

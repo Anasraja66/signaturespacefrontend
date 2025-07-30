@@ -1,0 +1,49 @@
+.property-card-horizontal {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    min-height: 260px;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin: 18px 0;
+    overflow: visible;
+}
+
+.property-content-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 220px;
+    overflow: visible !important;
+}
+
+.view-deal-btn-horizontal {
+    display: block !important;
+    width: 120px;
+    margin: 24px 0 0 0;
+    align-self: flex-end;
+    padding: 10px 20px;
+    background: #bfa76a;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: background 0.2s;
+    z-index: 2;
+    position: relative;
+}
+
+.view-deal-btn-horizontal:hover {
+    background: #a68c4a;
+}
+
+@media (min-width: 900px) {
+    .view-deal-btn-horizontal {
+        display: block !important;
+    }
+}

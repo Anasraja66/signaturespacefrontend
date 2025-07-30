@@ -1,0 +1,169 @@
+/* Base animation classes - initially hidden */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Title animations */
+.animate-title {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: all 1s ease-out;
+}
+
+.animate-title.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.animate-title.visible::after {
+  animation: underlineExpand 1s ease-out 0.5s both;
+}
+
+/* Staggered card animations */
+.animate-card {
+  opacity: 0;
+  transform: translateY(50px) scale(0.95);
+  transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.animate-card.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Slider container animations */
+.animate-slider {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.animate-slider.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Tab animations */
+.animate-tabs {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s ease-out;
+}
+
+.animate-tabs.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Form animations */
+.animate-form {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s ease-out;
+}
+
+.animate-form.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Button animations */
+.animate-button {
+  opacity: 0;
+  transform: translateY(20px) scale(0.9);
+  transition: all 0.6s ease-out;
+}
+
+.animate-button.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Container animations */
+.animate-container {
+  opacity: 0;
+  transform: translateY(60px) scale(0.95);
+  transition: all 1.2s ease-out;
+}
+
+.animate-container.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* Floating elements - only animate when visible */
+.animate-floating {
+  opacity: 0;
+  transition: opacity 0.8s ease-out;
+}
+
+.animate-floating.visible {
+  opacity: 1;
+  animation: float 6s ease-in-out infinite;
+}
+
+/* Background pattern animations */
+.animate-background-pattern {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+
+.animate-background-pattern.visible {
+  opacity: 1;
+  animation: patternMove 15s linear infinite;
+}
+
+/* Keyframes remain the same but are only triggered when visible */
+@keyframes underlineExpand {
+  from {
+    width: 0;
+  }
+  to {
+    width: 80px;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-20px) rotate(180deg);
+  }
+}
+
+@keyframes patternMove {
+  0% {
+    transform: translateX(0) translateY(0);
+  }
+  100% {
+    transform: translateX(60px) translateY(60px);
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-on-scroll,
+  .animate-title,
+  .animate-card,
+  .animate-slider,
+  .animate-tabs,
+  .animate-form,
+  .animate-button,
+  .animate-container,
+  .animate-floating,
+  .animate-background-pattern {
+    transition: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

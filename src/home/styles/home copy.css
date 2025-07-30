@@ -1,0 +1,1495 @@
+/* app/home/styles/home.css */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+  color: #333;
+}
+
+/* Header Styles */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  padding: 0 2rem;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 80px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #cba135;
+  text-decoration: none;
+}
+
+.logo-icon img {
+  width: auto;
+  height: 160px;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #cba135;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.button-link{
+  background: none;
+  border: none;
+  color: #cba135;
+  font-weight: 550;
+  transition: color 0.2s ease;
+}
+.nav-links a:hover {
+  color: #cba135;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.profile-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #cba135;
+  display: flex;
+  color: white;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.profile-icon:hover {
+  transform: scale(1.04);
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.hamburger span {
+  width: 20px;
+  height: 2px;
+  background: #333;
+  margin: 2px 0;
+  transition: 0.3s;
+}
+
+/* Mobile Navigation */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: 80px;
+  left: 0;
+  right: 0;
+  background: white;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 999;
+}
+
+.mobile-nav.active {
+  display: block;
+}
+
+.mobile-nav ul {
+  list-style: none;
+  padding: 1rem;
+}
+
+.mobile-nav li {
+  margin: 1rem 0;
+}
+
+.mobile-nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  font-size: 1.1rem;
+}
+
+.mobile-nav-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+}
+
+.close-mobile-menu {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Hero Section */
+.hero {
+  height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  background-image: url("../../assets/header-image.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding-top: 80px; /* To account for fixed header */
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.hero-content {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem;
+  /* background: rgba(0,0,0,0.5); */
+  border-radius: 16px;
+  /* box-shadow: 0 4px 24px rgba(0,0,0,0.2); */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Ensure search bar is always above overlays */
+.search-container {
+  z-index: 30;
+  position: relative;
+}
+
+/* Areas Section */
+.areas-section {
+  padding: 4rem 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 2.5rem;
+  color: #cba135;
+  margin-bottom: 3rem;
+  font-weight: 600;
+}
+
+.areas-container {
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(203, 161, 53, 0.15);
+  padding: 3rem 4rem;
+  overflow: visible;
+  border: 1px solid rgba(203, 161, 53, 0.1);
+}
+
+.areas-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.areas-slider {
+  display: flex;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.area-card {
+  text-align: center;
+  min-width: 220px;
+  flex-shrink: 0;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(203, 161, 53, 0.1);
+  cursor: pointer; /* Added for clickability */
+}
+
+.area-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 28px rgba(203, 161, 53, 0.15);
+  border-color: rgba(203, 161, 53, 0.3);
+}
+
+.area-image {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1.5rem;
+  display: block;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  border: 4px solid white;
+  transition: all 0.3s ease;
+}
+
+.area-card:hover .area-image {
+  transform: scale(1.05);
+  box-shadow: 0 12px 32px rgba(203, 161, 53, 0.2);
+}
+
+.area-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  color: #333;
+  transition: color 0.3s ease;
+}
+
+.area-card:hover .area-title {
+  color: #cba135;
+}
+
+.view-properties-btn {
+  background: linear-gradient(135deg, #cba135 0%, #d4af47 100%);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.8rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(203, 161, 53, 0.3);
+}
+
+.view-properties-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(203, 161, 53, 0.4);
+  background: linear-gradient(135deg, #d4af47 0%, #cba135 100%);
+}
+
+.nav-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: white;
+  border: 2px solid #cba135;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  color: #cba135;
+  box-shadow: 0 4px 16px rgba(203, 161, 53, 0.2);
+}
+
+.nav-button:hover {
+  background: #cba135;
+  color: white;
+  transform: translateY(-50%) scale(1.1);
+  box-shadow: 0 6px 20px rgba(203, 161, 53, 0.3);
+}
+
+.nav-button.prev {
+  left: -30px;
+}
+
+.nav-button.next {
+  right: -30px;
+}
+
+.nav-button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: translateY(-50%) scale(0.9);
+}
+
+.nav-button:disabled:hover {
+  background: white;
+  color: #cba135;
+  transform: translateY(-50%) scale(0.9);
+  box-shadow: 0 4px 16px rgba(203, 161, 53, 0.2);
+}
+
+/* Rentals Section */
+.rentals-section {
+  padding: 4rem 2rem;
+  background: #f9f9f9;
+}
+
+.rentals-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.rentals-title {
+  font-size: 2rem;
+  color: #cba135;
+  margin-bottom: 2rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.rentals-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.rental-card {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease;
+}
+
+.rental-card:hover {
+  transform: translateY(-4px);
+}
+
+.rental-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.rental-info {
+  padding: 1rem;
+}
+
+.rental-price {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.rental-details {
+  color: #666;
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+}
+
+.rental-location {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #666;
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+}
+
+.rental-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #cba135;
+  font-size: 0.85rem;
+}
+
+.view-deal-btn {
+  background: #cba135;
+  color: white;
+  border: none;
+  padding: 0.4rem 0.8rem;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.view-deal-btn:hover {
+  background: #b8932e;
+}
+
+/* Rental Card Image Carousel */
+.rental-image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.rental-images {
+  display: flex;
+  transition: transform 0.3s ease;
+}
+
+.rental-image {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.image-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  z-index: 5;
+}
+
+.rental-card:hover .image-nav-btn {
+  opacity: 1;
+}
+
+.image-nav-btn:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.image-nav-btn.prev {
+  left: 8px;
+}
+
+.image-nav-btn.next {
+  right: 8px;
+}
+
+.image-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 4px;
+}
+
+.image-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.image-dot.active {
+  background: white;
+}
+
+/* Rental Tabs */
+.rental-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.rental-tab {
+  background: transparent;
+  border: 2px solid #cba135;
+  color: #cba135;
+  padding: 0.75rem 2rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.rental-tab.active {
+  background: #cba135;
+  color: white;
+}
+
+.rental-tab:hover {
+  background: #cba135;
+  color: white;
+}
+
+.show-more-btn {
+    background: none;
+    border: 2px solid;
+    border-radius: 50px;
+    color: #cba135;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    font-size: 0.95rem;
+    padding: 15px;
+    width: 100%;
+}
+
+/* Agents Section */
+.agents-section {
+  max-width: 1200px;
+  padding: 4rem 2rem;
+  background: white;
+}
+
+.agents-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.agents-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 3rem;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.agents-slider-container {
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(203, 161, 53, 0.15);
+  padding: 3rem 4rem;
+  overflow: visible;
+  border: 1px solid rgba(203, 161, 53, 0.1);
+}
+
+.agents-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.agents-slider {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+/* Sell with top agents card - no border or shadow */
+.sell-agents-card {
+  min-width: 260px;
+  flex-shrink: 0;
+  padding: 2rem 1.5rem;
+  background: white;
+  border-radius: 20px;
+  text-align: center;
+  transition: all 0.3s ease;
+  /* No border or shadow as requested */
+}
+
+.sell-agents-card:hover {
+  transform: translateY(-4px);
+}
+
+.sell-agents-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.sell-agents-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.4;
+}
+
+.top-agents-btn {
+  background: transparent;
+  border: 2px solid #e0e0e0;
+  color: #333;
+  padding: 0.75rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.top-agents-btn:after {
+  content: "→";
+  font-size: 1rem;
+}
+
+.top-agents-btn:hover {
+  border-color: #cba135;
+  color: #cba135;
+}
+
+/* Updated agent cards */
+.agent-card {
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 16px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-width: 260px;
+  flex-shrink: 0;
+}
+
+.agent-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  border-color: #cba135;
+}
+
+.agent-image {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  display: block;
+}
+
+.agent-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.rating-number {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.star-icon {
+  color: #cba135;
+  width: 16px;
+  height: 16px;
+}
+
+.agent-name {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.agent-properties {
+  color: #666;
+  font-size: 0.85rem;
+  margin-bottom: 1.5rem;
+}
+
+.contact-agent-btn {
+  background: transparent;
+  border: 1px solid #e0e0e0;
+  color: #333;
+  padding: 0.6rem 1.5rem;
+  border-radius: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 0.85rem;
+  width: 100%;
+}
+
+.contact-agent-btn:hover {
+  border-color: #cba135;
+  color: #cba135;
+}
+
+/* In your globals.css or a dedicated modal.css file */
+
+.agent-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Dark overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Ensure it's on top of other content */
+}
+
+.agent-modal-content {
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px; /* Max width for larger screens */
+  position: relative;
+  text-align: center;
+  max-height: 80vh; /* Limit height for scrollability */
+  overflow-y: auto; /* Enable scrolling if content is long */
+}
+
+.modal-agent-image {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 20px;
+  border: 3px solid #cba135; /* Gold border */
+}
+
+.agent-modal-close {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #333;
+}
+
+.agent-modal-close svg {
+    /* Style for your SVG icon if renderIcon returns an SVG */
+    display: block; /* Ensures SVG behaves like a block element */
+}
+
+.agent-modal-content h2 {
+  margin-top: 0;
+  color: #333;
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.modal-agent-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #cba135; /* Gold color for rating */
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+.modal-agent-rating svg {
+    fill: currentColor; /* Ensure the star icon is colored */
+}
+
+.modal-agent-properties {
+  color: #666;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.modal-agent-bio {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  text-align: left;
+}
+
+.modal-contact-info p {
+  margin: 5px 0;
+  font-size: 1rem;
+  color: #333;
+}
+
+.modal-contact-info a {
+  color: #cba135;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.modal-contact-info a:hover {
+  text-decoration: underline;
+}
+
+/* Add any other specific styles for your agent cards or slider if needed */
+/* For example, adjust .agents-slider-container to give it a fixed width */
+/* or add padding to .agents-wrapper to prevent overflow */
+.agents-slider-container {
+    overflow: hidden; /* Ensures content outside slider isn't visible */
+    position: relative; /* For positioning nav buttons */
+}
+
+/* Navigation buttons for agents */
+.agents-prev {
+  left: -30px;
+}
+
+.agents-next {
+  right: -30px;
+}
+
+/* Reviews Section Updates */
+.reviews-section {
+  max-width: 1200px;
+  padding: 4rem 2rem;
+  background: #f9f9f9;
+}
+
+.reviews-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.reviews-header {
+  margin-bottom: 1rem;
+}
+
+.reviews-title-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.reviews-icon {
+  color: #cba135;
+  width: 24px;
+  height: 24px;
+}
+
+.reviews-title {
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.reviews-slider-container {
+  position: relative;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(203, 161, 53, 0.15);
+  padding: 3rem 4rem;
+  overflow: visible;
+  border: 1px solid rgba(203, 161, 53, 0.1);
+}
+
+.reviews-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.reviews-slider {
+  display: flex;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  gap: 2rem;
+  padding: 0 1rem;
+}
+
+.review-card {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f0f0f0;
+  max-width: 360px;
+  flex-shrink: 0;
+}
+
+.review-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.review-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.reviewer-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.reviewer-info {
+  flex: 1;
+}
+
+.reviewer-name-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.reviewer-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.verified-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: #e8f5e8;
+  color: #2d7d32;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.verified-badge svg {
+  width: 12px;
+  height: 12px;
+}
+
+.review-date {
+  font-size: 0.85rem;
+  color: #666;
+  margin: 0;
+}
+
+.review-rating {
+  display: flex;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  color: #cba135;
+}
+
+.review-text {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #555;
+  margin: 0;
+}
+
+
+/* Navigation buttons for reviews */
+.reviews-prev {
+  left: -30px;
+}
+
+.reviews-next {
+  right: -30px;
+}
+
+/* List Property Section */
+.list-property-section {
+  width: 100%;
+  padding: 4rem 2rem;
+  background: #f9f9f9;
+}
+
+.list-property-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-image: url("../../assets/list-property-image.png");
+  background-size: cover;
+  background-position: center;
+  border-radius: 20px;
+  overflow: hidden;
+  position: relative;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+}
+
+.list-property-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.list-property-content {
+  position: relative;
+  z-index: 2;
+  background: white;
+  padding: 2.5rem;
+  border-radius: 16px;
+  margin: 2rem;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+}
+
+.list-property-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.list-property-description {
+  color: #666;
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.list-property-btn {
+  background: #cba135;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.list-property-btn:hover {
+  background: #ae8a2c;
+  transform: translateY(-2px);
+}
+
+/* Newsletter Section */
+.newsletter-section {
+  background: #f5f5f5;
+  padding: 3rem 2rem;
+}
+
+.newsletter-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.newsletter-content {
+  background: white;
+  border-radius: 20px;
+  padding: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 3rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.newsletter-text {
+  flex: 1;
+}
+
+.newsletter-title {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.newsletter-subtitle {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.newsletter-input {
+  padding: 1rem 1.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 25px;
+  font-size: 1rem;
+  outline: none;
+  background: #f8f9fa;
+  color: #333;
+  min-width: 280px;
+  transition: all 0.3s ease;
+}
+
+.newsletter-input:focus {
+  border-color: #cba135;
+  background: white;
+}
+
+.newsletter-input::placeholder {
+  color: #999;
+}
+
+.newsletter-btn {
+  background: #cba135;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  font-size: 1rem;
+}
+
+.newsletter-btn:hover {
+  background: #1e3d2a;
+  transform: translateY(-2px);
+}
+
+/* Footer */
+.footer {
+  background: #f8f9fa;
+  color: #333;
+  padding: 3rem 2rem 1rem;
+  width: 100%;
+}
+
+.footer-container {
+  margin: 0 auto;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 3rem;
+  margin-bottom: 2rem;
+}
+
+.footer-section h3 {
+  color: #333;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+.footer-section p {
+  line-height: 1.6;
+  color: #666;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.footer-links {
+  list-style: none;
+}
+
+.footer-links li {
+  margin-bottom: 0.75rem;
+}
+
+.footer-links a {
+  color: #666;
+  text-decoration: none;
+  transition: color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.footer-links a:hover {
+  color: #333;
+}
+
+.social-links {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.social-link {
+  width: 32px;
+  height: 32px;
+  background: #007bff;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.social-link.instagram {
+  background: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+}
+
+.social-link.facebook {
+  background: #1877f2;
+}
+
+.social-link.linkedin {
+  background: #0077b5;
+}
+
+.social-link.tiktok {
+  background: #000;
+}
+
+.social-link:hover {
+  transform: translateY(-2px);
+}
+
+.footer-bottom {
+  border-top: 1px solid #e0e0e0;
+  padding-top: 1rem;
+  text-align: center;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .rentals-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .agents-slider {
+    gap: 1.5rem;
+  }
+
+  .sell-agents-card,
+  .agent-card,
+  .review-card {
+    max-width: 220px;
+  }
+}
+
+@media (max-width: 900px) {
+  .nav-links {
+    display: none;
+  }
+
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-right {
+    flex-direction: row-reverse;
+  }
+
+  .section-title {
+    font-size: 2rem;
+  }
+
+  .areas-container {
+    padding: 2rem 1.5rem;
+    margin: 0 1rem;
+  }
+
+  .areas-slider {
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  .area-card {
+    min-width: 180px;
+    padding: 1rem;
+  }
+
+  .area-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .nav-button {
+    width: 50px;
+    height: 50px;
+  }
+
+  .nav-button.prev {
+    left: -25px;
+  }
+
+  .nav-button.next {
+    right: -25px;
+  }
+
+  .show-more-btn {
+    margin: 2rem 1rem;
+    font-size: 1rem;
+  }
+
+  .agents-title,
+  .reviews-title {
+    font-size: 2rem;
+  }
+
+  .agents-slider-container,
+  .reviews-slider-container {
+    padding: 2rem 1.5rem;
+    margin: 0 1rem;
+  }
+
+  .agents-slider,
+  .reviews-slider {
+    gap: 1rem;
+    padding: 0 0.5rem;
+  }
+
+  .sell-agents-card,
+  .agent-card,
+  .review-card {
+    min-width: 200px;
+    padding: 1.5rem 1rem;
+  }
+
+  .sell-agents-title {
+    font-size: 1.5rem;
+  }
+
+  .sell-agents-subtitle {
+    font-size: 1rem;
+  }
+
+  .newsletter-content {
+    flex-direction: column;
+    gap: 2rem;
+    text-align: center;
+  }
+
+  .newsletter-form {
+    justify-content: center;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .social-links {
+    justify-content: center;
+  }
+
+  .rentals-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .rentals-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .newsletter-input {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0 1rem;
+  }
+
+  .hero-content {
+    padding: 0 1rem;
+  }
+
+  .areas-section,
+  .rentals-section,
+  .agents-section,
+  .reviews-section,
+  .list-property-section,
+  .newsletter-section,
+  .footer {
+    padding: 2rem 1rem;
+  }
+
+  .areas-slider {
+    gap: 0.5rem;
+  }
+
+  .area-card {
+    min-width: 120px;
+  }
+
+  .nav-button.prev {
+    left: -20px;
+  }
+
+  .nav-button.next {
+    right: -20px;
+  }
+
+  .show-more-btn {
+    margin: 2rem 0.5rem;
+  }
+
+  .newsletter-content {
+    padding: 2rem 1.5rem;
+  }
+
+  .newsletter-form {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .sell-agents-card,
+  .agent-card {
+    max-width: 250px;
+  }
+  .review-card {
+    min-width: 250px;
+  }
+
+  .nav-button.agents-prev,
+  .nav-button.reviews-prev {
+    left: -20px;
+  }
+
+  .nav-button.agents-next,
+  .nav-button.reviews-next {
+    right: -20px;
+  }
+}

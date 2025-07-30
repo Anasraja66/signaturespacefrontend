@@ -1,0 +1,125 @@
+/* Simple, reliable animations */
+
+/* Base animation classes - elements start hidden */
+.hero-title,
+.hero-subtitle,
+.section-heading,
+.section-text,
+.section-image,
+.point-item,
+.choice-list,
+.service-item,
+.stat-item,
+.journey-step,
+.testimonial-card {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* When animate-in class is added, elements become visible */
+.animate-in {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* Delay classes for staggered animations */
+.animate-delay-1 {
+  transition-delay: 0.2s;
+}
+
+.animate-delay-2 {
+  transition-delay: 0.4s;
+}
+
+.animate-delay-3 {
+  transition-delay: 0.6s;
+}
+
+.animate-delay-4 {
+  transition-delay: 0.8s;
+}
+
+.animate-delay-5 {
+  transition-delay: 1s;
+}
+
+/* Special animations for specific elements */
+.section-image {
+  transform: translateX(30px);
+}
+
+.section-image.animate-in {
+  transform: translateX(0) !important;
+}
+
+.hero-title {
+  transform: translateY(50px);
+}
+
+.service-item {
+  transform: translateY(40px) scale(0.95);
+}
+
+.service-item.animate-in {
+  transform: translateY(0) scale(1) !important;
+}
+
+.stat-item {
+  transform: translateY(30px) scale(0.9);
+}
+
+.stat-item.animate-in {
+  transform: translateY(0) scale(1) !important;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  .hero-title,
+  .hero-subtitle,
+  .section-heading,
+  .section-text,
+  .section-image,
+  .point-item,
+  .choice-list,
+  .service-item,
+  .stat-item,
+  .journey-step,
+  .testimonial-card {
+    transition: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Performance optimization */
+.hero-title,
+.hero-subtitle,
+.section-heading,
+.section-text,
+.section-image,
+.point-item,
+.choice-list,
+.service-item,
+.stat-item,
+.journey-step,
+.testimonial-card {
+  will-change: transform, opacity;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+  .hero-title,
+  .hero-subtitle,
+  .section-heading,
+  .section-text,
+  .section-image,
+  .point-item,
+  .choice-list,
+  .service-item,
+  .stat-item,
+  .journey-step,
+  .testimonial-card {
+    transition-duration: 0.6s;
+  }
+}
