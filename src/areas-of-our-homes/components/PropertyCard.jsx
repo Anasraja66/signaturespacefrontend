@@ -4,7 +4,8 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import "../styles/property-card.css"
-
+import { Bath } from 'lucide-react';
+import { FaBath, FaBed, FaUserFriends } from 'react-icons/fa';
 
 export default function PropertyCard({ property, isFavorite, onToggleFavorite, onShare }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
@@ -81,8 +82,7 @@ export default function PropertyCard({ property, isFavorite, onToggleFavorite, o
           </div>
         </div>
         <div className="property-info-horizontal">
-          <h3 className="property-title-horizontal">{property.title || property.name}</h3>
-          <h2 className="property-name-horizontal">{property.name || property.title}</h2>
+          <h2 className="property-name-horizontal" >{property.name || property.title}</h2>
           <p className="property-location-horizontal">
             {typeof property.location === "string"
               ? property.location
@@ -90,9 +90,9 @@ export default function PropertyCard({ property, isFavorite, onToggleFavorite, o
           </p>
         </div>
         <div className="property-meta-horizontal">
-          <span>🛏 {property.bedrooms || 0} BR</span>
-          <span>🛁 {property.bathrooms || 0} Bath</span>
-          <span>👥 {property.guests || 0} Guests</span>
+          <span><FaBed /> {property.bedrooms || 0} </span>
+          <span><FaBath /> {property.bathrooms || 0} </span>
+          <span><FaUserFriends /> {property.guests || 0}</span>
         </div>
         {property.rating && (
           <div className="rating-horizontal">

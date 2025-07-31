@@ -60,6 +60,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -70,6 +71,7 @@
   from {
     width: 0;
   }
+
   to {
     width: 80px;
   }
@@ -89,6 +91,7 @@
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -148,6 +151,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -195,6 +199,7 @@
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -242,11 +247,14 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  z-index: 20; /* Increased z-index */
+  z-index: 20;
+  /* Increased z-index */
   color: #64748b;
   backdrop-filter: blur(10px);
-  opacity: 0; /* Start hidden */
-  pointer-events: auto; /* Ensure clickable */
+  opacity: 0;
+  /* Start hidden */
+  pointer-events: auto;
+  /* Ensure clickable */
 }
 
 /* Show buttons on card hover */
@@ -284,7 +292,8 @@
   transform: translateX(-50%);
   display: flex;
   gap: 6px;
-  z-index: 15; /* Increased z-index */
+  z-index: 15;
+  /* Increased z-index */
 }
 
 .image-dot {
@@ -344,6 +353,41 @@
 
 .rental-location svg {
   color: #cba135;
+}
+
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.8);
+  border: none;
+  cursor: pointer;
+  z-index: 2;
+  padding: 4px;
+  border-radius: 50%;
+}
+
+.carousel-btn.left {
+  left: 8px;
+}
+
+.carousel-btn.right {
+  right: 8px;
+}
+
+.rental-image-container {
+  position: relative;
+}
+
+.carousel-indicator {
+  position: absolute;
+  bottom: 8px;
+  right: 12px;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.9rem;
 }
 
 /* Rental Footer */
@@ -586,6 +630,7 @@
 
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
+
   .rental-card,
   .rental-tab,
   .image-nav-btn,
@@ -643,18 +688,23 @@
 .rental-card:nth-child(1) {
   animation-delay: 0.1s;
 }
+
 .rental-card:nth-child(2) {
   animation-delay: 0.2s;
 }
+
 .rental-card:nth-child(3) {
   animation-delay: 0.3s;
 }
+
 .rental-card:nth-child(4) {
   animation-delay: 0.4s;
 }
+
 .rental-card:nth-child(5) {
   animation-delay: 0.5s;
 }
+
 .rental-card:nth-child(6) {
   animation-delay: 0.6s;
 }

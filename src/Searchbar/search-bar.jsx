@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import "./search-bar.css"
-import PopupPortal from "./PopupPortal" // Assuming this component is correctly defined
+import PopupPortal from "./PopupPortal"
 
 const destinations = [
   {
@@ -76,23 +76,115 @@ const destinations = [
 export default function SearchBar() {
   const [activeSection, setActiveSection] = useState(null)
   const popupRef = useRef(null)
+  const searchBarRef = useRef(null)
+  const [isMobile, setIsMobile] = useState(false)
+
+  // State for dynamic popup positioning
+  const [popupStyles, setPopupStyles] = useState({
+    location: null, // null means not visible
+    calendar: null,
+    guests: null,
+  })
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768)
+    }
+
+    checkMobile()
+    window.addEventListener("resize", checkMobile)
+
+    return () => window.removeEventListener("resize", checkMobile)
+  }, [])
+
+  // Calculate and set popup position
+  useEffect(() => {
+    if (!activeSection || isMobile) {
+      setPopupStyles({ location: null, calendar: null, guests: null })
+      return
+    }
+
+    const searchBarRect = searchBarRef.current.getBoundingClientRect()
+    const offset = 8 // Gap between search bar and dropdown
+
+    const newPopupStyles = { location: null, calendar: null, guests: null }
+
+    if (activeSection === "location") {
+      const locationSection = searchBarRef.current.querySelector(".search-section:first-child")
+      if (locationSection) {
+        const rect = locationSection.getBoundingClientRect()
+        newPopupStyles.location = {
+          top: searchBarRect.bottom + window.scrollY + offset, // Adjusted for scroll position
+          left: rect.left + window.scrollX, // Adjusted for scroll position
+          width: rect.width,
+        }
+      }
+    } else if (activeSection === "checkin" || activeSection === "checkout" || activeSection === "when") {
+      // Calendar dropdown should be centered under the entire search bar
+      const calendarDropdownBaseWidth = 850
+      const viewportPadding = 20
+      const calendarDropdownWidth = Math.min(calendarDropdownBaseWidth, window.innerWidth - viewportPadding * 2)
+
+      let left = searchBarRect.left + searchBarRect.width / 2 - calendarDropdownWidth / 2
+
+      // Adjust for viewport edges
+      if (left < viewportPadding) {
+        left = viewportPadding
+      }
+      const rightEdge = left + calendarDropdownWidth
+      if (rightEdge > window.innerWidth - viewportPadding) {
+        left = window.innerWidth - calendarDropdownWidth - viewportPadding
+      }
+
+      newPopupStyles.calendar = {
+        top: searchBarRect.bottom + window.scrollY + offset, // Adjusted for scroll position
+        left: left + window.scrollX, // Adjusted for scroll position
+        width: calendarDropdownWidth,
+      }
+    } else if (activeSection === "guests") {
+      const guestsSection = searchBarRef.current.querySelector(".search-section.guests-section")
+      if (guestsSection) {
+        const rect = guestsSection.getBoundingClientRect()
+        newPopupStyles.guests = {
+          top: searchBarRect.bottom + window.scrollY + offset, // Adjusted for scroll position
+          left: rect.left + window.scrollX, // Adjusted for scroll position
+          width: rect.width,
+        }
+      }
+    }
+    setPopupStyles(newPopupStyles)
+  }, [activeSection, isMobile])
+
+  // Update popup positions on window resize and scroll
+  useEffect(() => {
+    const handlePositionUpdate = () => {
+      if (activeSection && !isMobile) {
+        // Re-trigger the position calculation by setting activeSection to itself
+        setActiveSection(activeSection)
+      }
+    }
+
+    window.addEventListener("resize", handlePositionUpdate)
+    window.addEventListener("scroll", handlePositionUpdate) // Add scroll listener
+    return () => {
+      window.removeEventListener("resize", handlePositionUpdate)
+      window.removeEventListener("scroll", handlePositionUpdate) // Clean up scroll listener
+    }
+  }, [activeSection, isMobile])
 
   // Close popup if clicking outside
   useEffect(() => {
     if (!activeSection) return
 
     const handleClickOutside = (event) => {
-      if (
-        popupRef.current &&
-        !popupRef.current.contains(event.target) &&
-        // Exclude the section buttons themselves
-        !event.target.closest(".search-section")
-      ) {
+      if (popupRef.current && !popupRef.current.contains(event.target) && !event.target.closest(".search-section")) {
         setActiveSection(null)
       }
     }
 
     document.addEventListener("mousedown", handleClickOutside)
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside)
     }
@@ -113,6 +205,9 @@ export default function SearchBar() {
   const [selectedMonth, setSelectedMonth] = useState(8) // September (0-indexed)
   const [dateFlexibility, setDateFlexibility] = useState("2")
 
+  const [mobileCalendarDate, setMobileCalendarDate] = useState(new Date())
+  const [mobileFlexibleYear, setMobileFlexibleYear] = useState(new Date().getFullYear())
+
   const totalGuests = guests.adults + guests.children + guests.infants
 
   const handleLocationSearch = (value) => {
@@ -123,7 +218,7 @@ export default function SearchBar() {
       const filtered = destinations.filter(
         (dest) =>
           dest.name.toLowerCase().includes(value.toLowerCase()) ||
-          dest.description.toLowerCase().includes(value.toLowerCase())
+          dest.description.toLowerCase().includes(value.toLowerCase()),
       )
       setFilteredDestinations(filtered)
     }
@@ -167,21 +262,6 @@ export default function SearchBar() {
       day: "numeric",
     })
   }
-
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ]
 
   const getWhenText = () => {
     if (calendarView === "flexible") {
@@ -256,6 +336,21 @@ export default function SearchBar() {
   const currentYear = currentDate.getFullYear()
   const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1
   const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear
+
+  const monthNames = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ]
 
   const getStayDurationTitle = () => {
     if (stayDuration === "month") return "Stay for a month"
@@ -357,154 +452,161 @@ export default function SearchBar() {
     }
   }
 
-  return (
-    <>
-      <div className="searchbar-bg" style={{ marginTop: "-30px" }}>
-        {" "}
-        {/* Added the background image class */}
-        <div className="search-container">
-          <div className="search-bar">
-            {/* Location Section */}
-            <div
-              className={`search-section ${activeSection === "location" ? "active" : ""}`}
-              onClick={() => setActiveSection(activeSection === "location" ? null : "location")}
-            >
-              <div className="section-content">
-                <label>Where</label>
-                <input
-                  type="text"
-                  placeholder="Search destinations"
-                  value={location}
-                  onChange={(e) => handleLocationSearch(e.target.value)}
-                  className="location-input"
-                />
-              </div>
-            </div>
+  const renderMobileModal = () => {
+    if (!isMobile || !activeSection) return null
 
-            <div className="divider"></div>
+    const getModalTitle = () => {
+      switch (activeSection) {
+        case "location":
+          return "Destination"
+        case "checkin":
+        case "checkout":
+        case "when":
+          return calendarView === "flexible" ? "1 week in Sep" : "Check-in"
+        case "guests":
+          return "Guests"
+        default:
+          return ""
+      }
+    }
 
-            {/* When Section - Combined Check-in/Check-out for flexible view */}
-            {calendarView === "flexible" ? (
-              <div
-                className={`search-section when-section ${activeSection === "when" ? "active" : ""}`}
-                onClick={() => setActiveSection(activeSection === "when" ? null : "when")}
-              >
-                <div className="section-content">
-                  <label>When</label>
-                  <span className="date-text">{getWhenText()}</span>
-                </div>
-              </div>
-            ) : (
+    const getActionButtonText = () => {
+      switch (activeSection) {
+        case "location":
+          return "Done"
+        case "checkin":
+        case "checkout":
+        case "when":
+          return calendarView === "flexible" ? "Next" : "Done"
+        case "guests":
+          return "Apply"
+        default:
+          return "Done"
+      }
+    }
+
+    return (
+      <PopupPortal>
+        <div className="mobile-modal" ref={popupRef}>
+          <div className="mobile-modal-header">
+            <button className="mobile-close-button" onClick={() => setActiveSection(null)}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+            <h2 className="mobile-modal-title">{getModalTitle()}</h2>
+            <div style={{ width: 40 }}></div>
+          </div>
+
+          <div className="mobile-modal-content">
+            {activeSection === "location" && (
               <>
-                {/* Check-in Section */}
-                <div
-                  className={`search-section ${activeSection === "checkin" ? "active" : ""}`}
-                  onClick={() => setActiveSection(activeSection === "checkin" ? null : "checkin")}
-                >
-                  <div className="section-content">
-                    <label>Check in</label>
-                    <span className="date-text">{checkIn ? formatDate(checkIn) : "Add dates"}</span>
-                  </div>
+                <div className="mobile-location-search">
+                  <input
+                    type="text"
+                    placeholder="Where to?"
+                    value={location}
+                    onChange={(e) => handleLocationSearch(e.target.value)}
+                    className="mobile-search-input"
+                  />
                 </div>
-
-                <div className="divider"></div>
-
-                {/* Check-out Section */}
-                <div
-                  className={`search-section ${activeSection === "checkout" ? "active" : ""}`}
-                  onClick={() => setActiveSection(activeSection === "checkout" ? null : "checkout")}
-                >
-                  <div className="section-content">
-                    <label>Check out</label>
-                    <span className="date-text">{checkOut ? formatDate(checkOut) : "Add dates"}</span>
+                <div className="mobile-destinations-section">
+                  <h3 className="mobile-section-title">Popular destinations</h3>
+                  <div className="destinations-list">
+                    {filteredDestinations.map((destination) => (
+                      <div
+                        key={destination.id}
+                        className="destination-item"
+                        onClick={() => handleDestinationSelect(destination)}
+                      >
+                        <div className="destination-icon">{renderIcon(destination.icon)}</div>
+                        <div className="destination-info">
+                          <div className="destination-name">{destination.name}</div>
+                          <div className="destination-description">{destination.description}</div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </>
             )}
 
-            <div className="divider"></div>
-
-            {/* Guests Section */}
-            <div
-              className={`search-section guests-section ${activeSection === "guests" ? "active" : ""}`}
-              onClick={() => setActiveSection(activeSection === "guests" ? null : "guests")}
-            >
-              <div className="section-content">
-                <label>Who</label>
-                <span className="guest-text">{totalGuests > 0 ? formatGuestText() : "Add guests"}</span>
-              </div>
-            </div>
-            <div className="divider"></div>
-            <button className="search-button" onClick={handleSearch}>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
-            </button>
-          </div>
-
-          {/* Location Dropdown */}
-          {activeSection === "location" && (
-            <PopupPortal>
-              <div className="location-dropdown" ref={popupRef}>
-                <div className="location-header">
-                  <h3>Suggested destinations</h3>
-                </div>
-                <div className="destinations-list">
-                  {filteredDestinations.map((destination) => (
-                    <div
-                      key={destination.id}
-                      className="destination-item"
-                      onClick={() => handleDestinationSelect(destination)}
-                    >
-                      <div className="destination-icon">{renderIcon(destination.icon)}</div>
-                      <div className="destination-info">
-                        <div className="destination-name">{destination.name}</div>
-                        <div className="destination-description">{destination.description}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </PopupPortal>
-          )}
-
-          {/* Calendar Dropdown */}
-          {(activeSection === "checkin" || activeSection === "checkout" || activeSection === "when") && (
-            <PopupPortal>
-              <div className="calendar-dropdown" ref={popupRef}>
-                <div className="calendar-tabs">
+            {(activeSection === "checkin" || activeSection === "checkout" || activeSection === "when") && (
+              <>
+                <div className="mobile-calendar-tabs">
                   <button
-                    className={`calendar-tab ${calendarView === "dates" ? "active" : ""}`}
+                    className={`mobile-calendar-tab ${calendarView === "dates" ? "active" : ""}`}
                     onClick={() => setCalendarView("dates")}
                   >
-                    Dates
+                    Exact dates
                   </button>
                   <button
-                    className={`calendar-tab ${calendarView === "flexible" ? "active" : ""}`}
+                    className={`mobile-calendar-tab ${calendarView === "flexible" ? "active" : ""}`}
                     onClick={() => setCalendarView("flexible")}
                   >
-                    Flexible
+                    I'm flexible
                   </button>
                 </div>
 
                 {calendarView === "dates" && (
-                  <>
-                    <div className="calendar-grid-container">
-                      <div className="calendar-month">
-                        <h3 className="month-title">
-                          {monthNames[currentMonth]} {currentYear}
-                        </h3>
-                        <div className="calendar-grid">
-                          <div className="day-headers">
-                            {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
-                              <div key={index} className="day-header">
-                                {day}
-                              </div>
-                            ))}
-                          </div>
-                          <div className="days-grid">
-                            {generateCalendar(currentYear, currentMonth).map((date, index) => (
+                  <div className="mobile-calendar-container">
+                    <div className="mobile-calendar-header">
+                      <button
+                        className="mobile-calendar-nav"
+                        onClick={() => {
+                          const newDate = new Date(mobileCalendarDate)
+                          newDate.setMonth(newDate.getMonth() - 1)
+                          setMobileCalendarDate(newDate)
+                        }}
+                      >
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <polyline points="15,18 9,12 15,6"></polyline>
+                        </svg>
+                      </button>
+                      <div className="mobile-calendar-title">
+                        {monthNames[mobileCalendarDate.getMonth()]} {mobileCalendarDate.getFullYear()}
+                      </div>
+                      <button
+                        className="mobile-calendar-nav"
+                        onClick={() => {
+                          const newDate = new Date(mobileCalendarDate)
+                          newDate.setMonth(newDate.getMonth() + 1)
+                          setMobileCalendarDate(newDate)
+                        }}
+                      >
+                        <svg
+                          width="20"
+                          height="20"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <polyline points="9,18 15,12 9,6"></polyline>
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div className="mobile-calendar-grid">
+                      <div className="calendar-grid">
+                        <div className="day-headers">
+                          {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
+                            <div key={index} className="day-header">
+                              {day}
+                            </div>
+                          ))}
+                        </div>
+                        <div className="days-grid">
+                          {generateCalendar(mobileCalendarDate.getFullYear(), mobileCalendarDate.getMonth()).map(
+                            (date, index) => (
                               <div
                                 key={index}
                                 className={`calendar-day ${date ? "clickable" : "empty"} ${date && isDateSelected(date) ? "selected" : ""
@@ -514,199 +616,562 @@ export default function SearchBar() {
                               >
                                 {date ? date.getDate() : ""}
                               </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="calendar-month">
-                        <h3 className="month-title">
-                          {monthNames[nextMonth]} {nextYear}
-                        </h3>
-                        <div className="calendar-grid">
-                          <div className="day-headers">
-                            {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
-                              <div key={index} className="day-header">
-                                {day}
-                              </div>
-                            ))}
-                          </div>
-                          <div className="days-grid">
-                            {generateCalendar(nextYear, nextMonth).map((date, index) => (
-                              <div
-                                key={index}
-                                className={`calendar-day ${date ? "clickable" : "empty"} ${date && isDateSelected(date) ? "selected" : ""
-                                  } ${date && isDateInRange(date) ? "in-range" : ""}`}
-                                onClick={() => date && handleDateClick(date)}
-                              >
-                                {date ? date.getDate() : ""}
-                              </div>
-                            ))}
-                          </div>
+                            ),
+                          )}
                         </div>
                       </div>
                     </div>
-
-                    {/* Date Flexibility Options */}
-                    <div className="date-flexibility">
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "exact" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("exact")}
-                      >
-                        Exact dates
-                      </button>
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "1" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("1")}
-                      >
-                        ± 1 day
-                      </button>
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "2" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("2")}
-                      >
-                        ± 2 days
-                      </button>
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "3" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("3")}
-                      >
-                        ± 3 days
-                      </button>
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "7" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("7")}
-                      >
-                        ± 7 days
-                      </button>
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "14" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("14")}
-                      >
-                        ± 14 days
-                      </button>
-                    </div>
-                  </>
+                  </div>
                 )}
 
                 {calendarView === "flexible" && (
-                  <div className="flexible-view">
-                    <div className="stay-duration-section">
-                      <h3 className="section-title">{getStayDurationTitle()}</h3>
-                      <div className="duration-options">
+                  <div className="mobile-flexible-view">
+                    <div className="mobile-stay-duration-section">
+                      <h3 className="section-title">How long would you like to stay?</h3>
+                      <div className="mobile-duration-options">
                         <button
-                          className={`duration-option ${stayDuration === "weekend" ? "active" : ""}`}
+                          className={`mobile-duration-option ${stayDuration === "weekend" ? "active" : ""}`}
                           onClick={() => setStayDuration("weekend")}
                         >
-                          Weekend
+                          Weekend stay
                         </button>
                         <button
-                          className={`duration-option ${stayDuration === "week" ? "active" : ""}`}
+                          className={`mobile-duration-option ${stayDuration === "week" ? "active" : ""}`}
                           onClick={() => setStayDuration("week")}
                         >
-                          Week
+                          1 week
                         </button>
                         <button
-                          className={`duration-option ${stayDuration === "month" ? "active" : ""}`}
+                          className={`mobile-duration-option ${stayDuration === "month" ? "active" : ""}`}
                           onClick={() => setStayDuration("month")}
                         >
-                          Month
+                          1 month
                         </button>
                       </div>
                     </div>
 
-                    <div className="month-selection-section">
-                      <h3 className="section-title">{getGoTitle()}</h3>
-                      <div className="month-cards-container">
-                        <div className="month-cards">
-                          {[6, 7, 8, 9, 10, 11].map((monthIndex) => (
-                            <div
-                              key={monthIndex}
-                              className={`month-card ${stayDuration === "month" && selectedMonth === monthIndex ? "selected" : ""
-                                }`}
-                              onClick={() => setSelectedMonth(monthIndex)}
+                    <div className="mobile-month-selection-section">
+                      <h3 className="section-title">When do you want to go?</h3>
+
+                      <div className="mobile-flexible-calendar">
+                        <div className="mobile-flexible-calendar-header">
+                          <button
+                            className="mobile-flexible-nav"
+                            onClick={() => setMobileFlexibleYear(mobileFlexibleYear - 1)}
+                          >
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
                             >
-                              <div className="month-icon">
-                                <svg
-                                  width="24"
-                                  height="24"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="1.5"
-                                >
-                                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                  <line x1="16" y1="2" x2="16" y2="6"></line>
-                                  <line x1="8" y1="2" x2="8" y2="6"></line>
-                                  <line x1="3" y1="10" x2="21" y2="10"></line>
-                                </svg>
-                              </div>
-                              <div className="month-name">{monthNames[monthIndex]}</div>
-                              <div className="month-year">2025</div>
+                              <polyline points="15,18 9,12 15,6"></polyline>
+                            </svg>
+                          </button>
+                          <div className="mobile-flexible-title">{mobileFlexibleYear}</div>
+                          <button
+                            className="mobile-flexible-nav"
+                            onClick={() => setMobileFlexibleYear(mobileFlexibleYear + 1)}
+                          >
+                            <svg
+                              width="20"
+                              height="20"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                            >
+                              <polyline points="9,18 15,12 9,6"></polyline>
+                            </svg>
+                          </button>
+                        </div>
+
+                        <div className="mobile-flexible-months-grid">
+                          {Array.from({ length: 12 }, (_, index) => (
+                            <div
+                              key={index}
+                              className={`mobile-flexible-month-card ${stayDuration === "month" && selectedMonth === index ? "selected" : ""
+                                }`}
+                              onClick={() => setSelectedMonth(index)}
+                            >
+                              <div className="mobile-flexible-month-name">{monthNames[index]}</div>
+                              <div className="mobile-flexible-month-year">{mobileFlexibleYear}</div>
                             </div>
                           ))}
                         </div>
-                        <button className="month-nav-arrow">
-                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <polyline points="9,18 15,12 9,6"></polyline>
-                          </svg>
-                        </button>
                       </div>
                     </div>
                   </div>
                 )}
-              </div>
-            </PopupPortal>
-          )}
+              </>
+            )}
 
-          {/* Guest Dropdown */}
-          {activeSection === "guests" && (
-            <PopupPortal>
-              <div className="guests-dropdown" ref={popupRef}>
-                <div className="guest-row">
+            {activeSection === "guests" && (
+              <div className="mobile-guests-content">
+                <div className="mobile-guest-row">
                   <div className="guest-info">
-                    <span className="guest-type">Adults</span>
-                    {/* <span className="guest-description">Ages 13 or above</span> */}
+                    <span className="mobile-guest-type">Adults</span>
+                    <span className="mobile-guest-description">13 and above</span>
                   </div>
-                  <div className="guest-controls">
+                  <div className="mobile-guest-controls">
                     <button
-                      className="guest-button"
+                      className="mobile-guest-button"
                       onClick={() => handleGuestChange("adults", false)}
                       disabled={guests.adults <= 1}
                     >
                       -
                     </button>
-                    <span className="guest-count">{guests.adults}</span>
-                    <button className="guest-button" onClick={() => handleGuestChange("adults", true)}>
+                    <span className="mobile-guest-count">{guests.adults}</span>
+                    <button className="mobile-guest-button" onClick={() => handleGuestChange("adults", true)}>
                       +
                     </button>
                   </div>
                 </div>
 
-                <div className="guest-row">
+                <div className="mobile-guest-row">
                   <div className="guest-info">
-                    <span className="guest-type">Children</span>
-                    {/* <span className="guest-description">Ages 2-12</span> */}
+                    <span className="mobile-guest-type">Children</span>
+                    <span className="mobile-guest-description">2-12</span>
                   </div>
-                  <div className="guest-controls">
+                  <div className="mobile-guest-controls">
                     <button
-                      className="guest-button"
+                      className="mobile-guest-button"
                       onClick={() => handleGuestChange("children", false)}
                       disabled={guests.children <= 0}
                     >
                       -
                     </button>
-                    <span className="guest-count">{guests.children}</span>
-                    <button className="guest-button" onClick={() => handleGuestChange("children", true)}>
+                    <span className="mobile-guest-count">{guests.children}</span>
+                    <button className="mobile-guest-button" onClick={() => handleGuestChange("children", true)}>
                       +
                     </button>
                   </div>
                 </div>
               </div>
-            </PopupPortal>
-          )}
-        </div>
+            )}
+          </div>
 
+          <div className="mobile-modal-footer">
+            <button className="mobile-action-button" onClick={() => setActiveSection(null)}>
+              {getActionButtonText()}
+            </button>
+          </div>
+        </div>
+      </PopupPortal>
+    )
+  }
+
+  return (
+    <>
+      <div className="searchbar-bg" style={{ marginBottom: "15px" }}>
+        <div className="search-container">
+          <div className="search-bar" ref={searchBarRef}>
+            {/* Mobile 2x2 Grid Layout */}
+            {isMobile ? (
+              <>
+                {/* Top Row - Location and Guests */}
+                <div
+                  className={`search-section ${activeSection === "location" ? "active" : ""}`}
+                  onClick={() => setActiveSection(activeSection === "location" ? null : "location")}
+                >
+                  <div className="section-content">
+                    <label>Where</label>
+                    <span className="date-text">{location || "United States"}</span>
+                  </div>
+                </div>
+
+                <div
+                  className={`search-section guests-section ${activeSection === "guests" ? "active" : ""}`}
+                  onClick={() => setActiveSection(activeSection === "guests" ? null : "guests")}
+                >
+                  <div className="section-content">
+                    <label>Who</label>
+                    <span className="guest-text">Guests</span>
+                  </div>
+                </div>
+
+                {/* Bottom Row - When Section */}
+                {calendarView === "flexible" ? (
+                  <div
+                    className={`search-section when-section ${activeSection === "when" ? "active" : ""}`}
+                    onClick={() => setActiveSection(activeSection === "when" ? null : "when")}
+                  >
+                    <div className="section-content">
+                      <label>When</label>
+                      <span className="date-text">{getWhenText()}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    className={`search-section when-section ${activeSection === "checkin" || activeSection === "checkout" ? "active" : ""}`}
+                    onClick={() =>
+                      setActiveSection(
+                        activeSection === "checkin" ? "checkin" : activeSection === "checkout" ? "checkout" : "checkin",
+                      )
+                    }
+                  >
+                    <div className="section-content">
+                      <label>When</label>
+                      <span className="date-text">
+                        {checkIn && checkOut
+                          ? `${formatDate(checkIn)} - ${formatDate(checkOut)}`
+                          : checkIn
+                            ? formatDate(checkIn)
+                            : "Anytime"}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Notification Bar */}
+
+                <button className="search-button" onClick={handleSearch}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                </button>
+              </>
+            ) : (
+              <>
+                {/* Desktop Layout */}
+                {/* Location Section */}
+                <div
+                  className={`search-section ${activeSection === "location" ? "active" : ""}`}
+                  onClick={() => setActiveSection(activeSection === "location" ? null : "location")}
+                >
+                  <div className="section-content">
+                    <label>Where</label>
+                    <input
+                      type="text"
+                      placeholder="Search destinations"
+                      value={location}
+                      onChange={(e) => handleLocationSearch(e.target.value)}
+                      className="location-input"
+                    />
+                  </div>
+                </div>
+
+                <div className="divider"></div>
+
+                {/* When Section - replaces Check-in/Check-out */}
+                <div
+                  className={`search-section when-section ${activeSection === "when" ? "active" : ""}`}
+                  onClick={() => setActiveSection(activeSection === "when" ? null : "when")}
+                >
+                  <div className="section-content">
+                    <label>When</label>
+                    <span className="date-text">
+                      {checkIn && checkOut
+                        ? `${formatDate(checkIn)} - ${formatDate(checkOut)}`
+                        : checkIn
+                          ? formatDate(checkIn)
+                          : "Add dates"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="divider"></div>
+
+                {/* Guests Section */}
+                <div
+                  className={`search-section guests-section ${activeSection === "guests" ? "active" : ""}`}
+                  onClick={() => setActiveSection(activeSection === "guests" ? null : "guests")}
+                >
+                  <div className="section-content">
+                    <label>Who</label>
+                    <span className="guest-text">{totalGuests > 0 ? formatGuestText() : "Add guests"}</span>
+                  </div>
+                </div>
+                <div className="divider"></div>
+                <button className="search-button" onClick={handleSearch}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <path d="m21 21-4.35-4.35"></path>
+                  </svg>
+                </button>
+              </>
+            )}
+          </div>
+
+          {/* Desktop Dropdowns - Positioned relative to search bar */}
+          {!isMobile && (
+            <>
+              {/* Location Dropdown */}
+              {popupStyles.location && (
+                <PopupPortal>
+                  <div className="location-dropdown" ref={popupRef} style={popupStyles.location}>
+                    <div className="location-header">
+                      <h3>Suggested destinations</h3>
+                    </div>
+                    <div className="destinations-list">
+                      {filteredDestinations.map((destination) => (
+                        <div
+                          key={destination.id}
+                          className="destination-item"
+                          onClick={() => handleDestinationSelect(destination)}
+                        >
+                          <div className="destination-icon">{renderIcon(destination.icon)}</div>
+                          <div className="destination-info">
+                            <div className="destination-name">{destination.name}</div>
+                            <div className="destination-description">{destination.description}</div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </PopupPortal>
+              )}
+
+              {/* Calendar Dropdown */}
+              {popupStyles.calendar && (
+                <PopupPortal>
+                  <div className="calendar-dropdown" ref={popupRef} style={popupStyles.calendar}>
+                    <div className="calendar-tabs">
+                      <button
+                        className={`calendar-tab ${calendarView === "dates" ? "active" : ""}`}
+                        onClick={() => setCalendarView("dates")}
+                      >
+                        Dates
+                      </button>
+                      <button
+                        className={`calendar-tab ${calendarView === "flexible" ? "active" : ""}`}
+                        onClick={() => setCalendarView("flexible")}
+                      >
+                        Flexible
+                      </button>
+                    </div>
+
+                    {calendarView === "dates" && (
+                      <>
+                        <div className="calendar-grid-container">
+                          <div className="calendar-month">
+                            <h3 className="month-title">
+                              {monthNames[currentMonth]} {currentYear}
+                            </h3>
+                            <div className="calendar-grid">
+                              <div className="day-headers">
+                                {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+                                  <div key={index} className="day-header">
+                                    {day}
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="days-grid">
+                                {generateCalendar(currentYear, currentMonth).map((date, index) => (
+                                  <div
+                                    key={index}
+                                    className={`calendar-day ${date ? "clickable" : "empty"} ${date && isDateSelected(date) ? "selected" : ""
+                                      } ${date && isDateInRange(date) ? "in-range" : ""} ${date && date < currentDate ? "past" : ""
+                                      }`}
+                                    onClick={() => date && date >= currentDate && handleDateClick(date)}
+                                  >
+                                    {date ? date.getDate() : ""}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="calendar-month">
+                            <h3 className="month-title">
+                              {monthNames[nextMonth]} {nextYear}
+                            </h3>
+                            <div className="calendar-grid">
+                              <div className="day-headers">
+                                {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+                                  <div key={index} className="day-header">
+                                    {day}
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="days-grid">
+                                {generateCalendar(nextYear, nextMonth).map((date, index) => (
+                                  <div
+                                    key={index}
+                                    className={`calendar-day ${date ? "clickable" : "empty"} ${date && isDateSelected(date) ? "selected" : ""
+                                      } ${date && isDateInRange(date) ? "in-range" : ""}`}
+                                    onClick={() => date && handleDateClick(date)}
+                                  >
+                                    {date ? date.getDate() : ""}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Date Flexibility Options */}
+                        <div className="date-flexibility">
+                          <button
+                            className={`flexibility-option ${dateFlexibility === "exact" ? "active" : ""}`}
+                            onClick={() => setDateFlexibility("exact")}
+                          >
+                            Exact dates
+                          </button>
+                          <button
+                            className={`flexibility-option ${dateFlexibility === "1" ? "active" : ""}`}
+                            onClick={() => setDateFlexibility("1")}
+                          >
+                            ± 1 day
+                          </button>
+                          <button
+                            className={`flexibility-option ${dateFlexibility === "2" ? "active" : ""}`}
+                            onClick={() => setDateFlexibility("2")}
+                          >
+                            ± 2 days
+                          </button>
+                          <button
+                            className={`flexibility-option ${dateFlexibility === "3" ? "active" : ""}`}
+                            onClick={() => setDateFlexibility("3")}
+                          >
+                            ± 3 days
+                          </button>
+                          <button
+                            className={`flexibility-option ${dateFlexibility === "7" ? "active" : ""}`}
+                            onClick={() => setDateFlexibility("7")}
+                          >
+                            ± 7 days
+                          </button>
+                          <button
+                            className={`flexibility-option ${dateFlexibility === "14" ? "active" : ""}`}
+                            onClick={() => setDateFlexibility("14")}
+                          >
+                            ± 14 days
+                          </button>
+                        </div>
+                      </>
+                    )}
+
+                    {calendarView === "flexible" && (
+                      <div className="flexible-view">
+                        <div className="stay-duration-section">
+                          <h3 className="section-title">{getStayDurationTitle()}</h3>
+                          <div className="duration-options">
+                            <button
+                              className={`duration-option ${stayDuration === "weekend" ? "active" : ""}`}
+                              onClick={() => setStayDuration("weekend")}
+                            >
+                              Weekend
+                            </button>
+                            <button
+                              className={`duration-option ${stayDuration === "week" ? "active" : ""}`}
+                              onClick={() => setStayDuration("week")}
+                            >
+                              Week
+                            </button>
+                            <button
+                              className={`duration-option ${stayDuration === "month" ? "active" : ""}`}
+                              onClick={() => setStayDuration("month")}
+                            >
+                              Month
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="month-selection-section">
+                          <h3 className="section-title">{getGoTitle()}</h3>
+                          <div className="month-cards-container">
+                            <div className="month-cards">
+                              {[6, 7, 8, 9, 10, 11].map((monthIndex) => (
+                                <div
+                                  key={monthIndex}
+                                  className={`month-card ${stayDuration === "month" && selectedMonth === monthIndex ? "selected" : ""
+                                    }`}
+                                  onClick={() => setSelectedMonth(monthIndex)}
+                                >
+                                  <div className="month-icon">
+                                    <svg
+                                      width="24"
+                                      height="24"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="1.5"
+                                    >
+                                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                  </div>
+                                  <div className="month-name">{monthNames[monthIndex]}</div>
+                                  <div className="month-year">2025</div>
+                                </div>
+                              ))}
+                            </div>
+                            <button className="month-nav-arrow">
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <polyline points="9,18 15,12 9,6"></polyline>
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </PopupPortal>
+              )}
+
+              {/* Guest Dropdown */}
+              {popupStyles.guests && (
+                <PopupPortal>
+                  <div className="guests-dropdown" ref={popupRef} style={popupStyles.guests}>
+                    <div className="guest-row">
+                      <div className="guest-info">
+                        <span className="guest-type">Adults</span>
+                      </div>
+                      <div className="guest-controls">
+                        <button
+                          className="guest-button"
+                          onClick={() => handleGuestChange("adults", false)}
+                          disabled={guests.adults <= 1}
+                        >
+                          -
+                        </button>
+                        <span className="guest-count">{guests.adults}</span>
+                        <button className="guest-button" onClick={() => handleGuestChange("adults", true)}>
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="guest-row">
+                      <div className="guest-info">
+                        <span className="guest-type">Children</span>
+                      </div>
+                      <div className="guest-controls">
+                        <button
+                          className="guest-button"
+                          onClick={() => handleGuestChange("children", false)}
+                          disabled={guests.children <= 0}
+                        >
+                          -
+                        </button>
+                        <span className="guest-count">{guests.children}</span>
+                        <button className="guest-button" onClick={() => handleGuestChange("children", true)}>
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </PopupPortal>
+              )}
+            </>
+          )}
+
+          {/* Mobile Modal */}
+          {renderMobileModal()}
+        </div>
         {/* Overlay */}
         {activeSection && <div className="overlay" onClick={() => setActiveSection(null)}></div>}
       </div>

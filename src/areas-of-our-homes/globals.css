@@ -275,7 +275,7 @@ body {
 }
 
 .property-name {
-  font-size: 18px;
+  font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 4px;
   line-height: 1.3;
@@ -826,12 +826,11 @@ body {
   }
 
   .map-section {
-    position: static;
-    min-height: 400px;
+    display: none !important;
   }
 
   .map-container {
-    height: 400px;
+    display: none !important;
   }
 
   .property-card-horizontal {
@@ -920,7 +919,6 @@ body {
     width: 95%;
     height: 40px;
     border-radius: 20px;
-    margin-top: 10px;
   }
 
   .guests-section {

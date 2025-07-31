@@ -77,7 +77,7 @@ const destinations = [
   },
 ]
 
-export default function ListingHeader({ onApplyFilters, initialFilters, location, setLocation }) {
+export default function ListingHeader({ onApplyFilters, initialFilters, location, setLocation, onOpenMapPopup }) {
   const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
@@ -125,6 +125,9 @@ export default function ListingHeader({ onApplyFilters, initialFilters, location
     }
   }
 
+  // Helper to check screen width
+  const isMobile = typeof window !== "undefined" && window.innerWidth < 1024;
+
   return (
     <header className="main-header">
       <div className="header-main-row">
@@ -137,6 +140,13 @@ export default function ListingHeader({ onApplyFilters, initialFilters, location
           <ListingSearchBar location={location} setLocation={setLocation} />
         </div>
         <div className="header-actions">
+          {/* Map button for mobile only (screen < 1024px) */}
+          {isMobile && (
+            <button className="map-button-mobile" onClick={onOpenMapPopup}>
+              {renderIcon("navigation", 16)}
+              <span>Map</span>
+            </button>
+          )}
           <button className="filter-button" onClick={() => setIsFilterPopupOpen(true)}>
             {renderIcon("filter", 16)}
             <span>Filters</span>

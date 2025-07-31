@@ -10,9 +10,10 @@ import "./globals.css"
 import { dummyProperties } from '../utils/dummyData';
 import Footer from "../home/components/Footer.jsx"
 
+
 // Assuming dummyProperties is correctly structured as per our last conversation
 
-export default function ListingPage() {
+const Page = () => {
   const [favorites, setFavorites] = useState([])
   const [location, setLocation] = useState("");
   const [searchParams] = useSearchParams()
@@ -24,6 +25,9 @@ export default function ListingPage() {
   const childrenParam = parseInt(searchParams.get("children")) || 0
   const infantsParam = parseInt(searchParams.get("infants")) || 0
   const petsParam = parseInt(searchParams.get("pets")) || 0
+
+  // Map popup state for mobile
+  const [showMapPopup, setShowMapPopup] = useState(false);
 
   const [appliedFilters, setAppliedFilters] = useState({
     petFriendly: false,
@@ -162,7 +166,13 @@ export default function ListingPage() {
   return (
     <>
       <div className="app-wrapper">
-        <ListingHeader onApplyFilters={handleApplyFilters} initialFilters={appliedFilters} location={location} setLocation={setLocation} />
+        <ListingHeader
+          onApplyFilters={handleApplyFilters}
+          initialFilters={appliedFilters}
+          location={location}
+          setLocation={setLocation}
+          onOpenMapPopup={() => setShowMapPopup(true)}
+        />
         <div className="main-content-wrapper static-map-layout">
           <div className="listings-scrollable">
             <div className="listings-section">
@@ -184,11 +194,22 @@ export default function ListingPage() {
             </div>
           </div>
           <div className="map-static">
-            <MapSection location={mapLocation} />
+            <MapSection location={mapLocation} properties={filteredProperties} />
           </div>
         </div>
+        {/* Mobile Map Popup */}
+        {showMapPopup && (
+          <MapSection
+            location={mapLocation}
+            properties={filteredProperties}
+            showAsPopup={true}
+            onClose={() => setShowMapPopup(false)}
+          />
+        )}
       </div>
       <Footer />
     </>
   )
 }
+
+export default Page;

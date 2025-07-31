@@ -76,8 +76,30 @@ export default function PropertyDetailsPage() {
     }
   }, [location]);
 
-  const bookedDates = useMemo(() => {
-    return propertyData?.bookedDates || [];
+  const [bookedDates, setBookedDates] = useState([]);
+
+  useEffect(() => {
+    if (!propertyData?.id) return;
+
+    fetch(`http://localhost:8000/api/bookings/?property=${propertyData.id}`)
+      .then(res => res.json())
+      .then(data => {
+        // data should be an array of bookings
+        const dates = [];
+        data.forEach(booking => {
+          const start = new Date(booking.check_in_date);
+          const end = new Date(booking.check_out_date);
+          for (
+            let d = new Date(start);
+            d <= end;
+            d.setDate(d.getDate() + 1)
+          ) {
+            dates.push(new Date(d).toISOString().split("T")[0]);
+          }
+        });
+        setBookedDates(dates);
+      })
+      .catch(() => setBookedDates([]));
   }, [propertyData]);
 
   // AgentCard props and logic

@@ -1,8 +1,52 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useNavigate } from "react-router-dom"
 import "../styles/searchBar.css"
+
+// Icon rendering component
+const renderIcon = (iconName) => {
+  switch (iconName) {
+    case "navigation":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"></polygon></svg>
+      )
+    case "building":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="2" width="18" height="20" rx="2" ry="2"></rect><line x1="12" y1="6" x2="12" y2="18"></line></svg>
+      )
+    case "building-2":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 10V2H6v18a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V8h-4z"></path><path d="M18 2h4v8h-4z"></path><path d="M14 2h-2v2"></path></svg>
+      )
+    case "anchor":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="5" r="3"></circle><line x1="12" y1="22" x2="12" y2="8"></line><path d="M5 12H2a10 10 0 0 0 20 0h-3"></path></svg>
+      )
+    case "home":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+      )
+    case "briefcase":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+      )
+    case "waves":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 13.5a6 6 0 0 0 12 0 6 6 0 0 1 12 0"></path><path d="M2 10v6a6 6 0 0 0 12 0 6 6 0 0 1 12 0V10"></path></svg>
+      )
+    case "mountain":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M8 3l4 8 5-5 5 15H2L8 3z"></path></svg>
+      )
+    case "trees":
+      return (
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 20V10"></path><path d="M12 20V4"></path><path d="M6 20v-4"></path><path d="M10 20h8"></path><path d="M6 16.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path><path d="M12 4.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path><path d="M18 10.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"></path></svg>
+      )
+    default:
+      return null
+  }
+}
 
 const destinations = [
   {
@@ -74,7 +118,8 @@ const destinations = [
 ]
 
 export default function SearchBar({ location, setLocation }) {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+  const [isMobile, setIsMobile] = useState(false)
   const [activeSection, setActiveSection] = useState(null)
   const [filteredDestinations, setFilteredDestinations] = useState(destinations)
   const [checkIn, setCheckIn] = useState(null)
@@ -90,267 +135,207 @@ export default function SearchBar({ location, setLocation }) {
   const [selectedMonth, setSelectedMonth] = useState(8) // September (0-indexed)
   const [dateFlexibility, setDateFlexibility] = useState("2")
 
-  const totalGuests = guests.adults + guests.children + guests.infants
+  // Debounce setup for mobile search
+  const debounceTimeoutRef = useRef(null);
+
+  // useEffect to handle window resize and determine mobile view
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 1024)
+    handleResize()
+    window.addEventListener("resize", handleResize)
+    return () => window.removeEventListener("resize", handleResize)
+  }, [])
+
+  // The core search function
+  const handleSearch = useCallback(() => {
+    console.log("Searching with:", {
+      location,
+      checkIn,
+      checkOut,
+      guests,
+      calendarView,
+      stayDuration,
+      selectedMonth,
+      dateFlexibility,
+    })
+    navigate(`/search?location=${location}&checkIn=${checkIn || ''}&checkOut=${checkOut || ''}&adults=${guests.adults}&children=${guests.children}`)
+    // Optionally close popups after a search is initiated (especially useful on mobile)
+    setActiveSection(null);
+  }, [location, checkIn, checkOut, guests, calendarView, stayDuration, selectedMonth, dateFlexibility, navigate]);
+
 
   const handleLocationSearch = (value) => {
     setLocation(value)
-    if (value.trim() === "") {
-      setFilteredDestinations(destinations)
-    } else {
-      const filtered = destinations.filter(
-        (dest) =>
-          dest.name.toLowerCase().includes(value.toLowerCase()) ||
-          dest.description.toLowerCase().includes(value.toLowerCase()),
+    setFilteredDestinations(
+      destinations.filter((dest) =>
+        dest.name.toLowerCase().includes(value.toLowerCase()) ||
+        dest.description.toLowerCase().includes(value.toLowerCase())
       )
-      setFilteredDestinations(filtered)
+    )
+
+    // Trigger debounced search ONLY on mobile
+    if (isMobile) {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      debounceTimeoutRef.current = setTimeout(() => {
+        handleSearch();
+      }, 500); // Trigger search after 500ms of no typing
     }
   }
 
   const handleDestinationSelect = (destination) => {
     setLocation(destination.name)
-    setActiveSection(null)
-  }
-
-  const handleGuestChange = (type, increment) => {
-    setGuests((prev) => ({
-      ...prev,
-      [type]: increment ? prev[type] + 1 : Math.max(type === "adults" ? 1 : 0, prev[type] - 1),
-    }))
-  }
-
-  // Search properties by text or city using backend API
-  const handleSearch = () => {
-    if (location && location.trim() !== "") {
-      // Search by city
-      fetch(`http://localhost:8000/api/properties/by-city/?city_name=${encodeURIComponent(location)}`)
-        .then(response => response.json())
-        .then(data => {
-          // Navigate to listing page with city param and pass properties data (optional)
-          navigate(`/listing?city=${encodeURIComponent(location)}`);
-          // Optionally, you can use a state manager (like Redux or Context) to pass 'data' to the listing page
-        })
-        .catch(error => console.error(error));
-    } else {
-      // Search by text (e.g., apartment, etc.)
-      fetch(`http://localhost:8000/api/properties/search-properties/?search_text=${encodeURIComponent(location)}&check_in=${checkIn ? checkIn.toISOString().split("T")[0] : ""}&check_out=${checkOut ? checkOut.toISOString().split("T")[0] : ""}&guest_males=${guests.adults}&guest_females=0&guest_children=${guests.children}`)
-        .then(response => response.json())
-        .then(data => {
-          // Navigate to listing page with search param and pass properties data (optional)
-          navigate(`/listing?search=${encodeURIComponent(location)}`);
-          // Optionally, you can use a state manager (like Redux or Context) to pass 'data' to the listing page
-        })
-        .catch(error => console.error(error));
+    setActiveSection(null) // Close the location popup
+    if (isMobile) {
+      handleSearch(); // Trigger search immediately on selection for mobile
     }
   }
 
-  const formatGuestText = () => {
-    if (totalGuests === 1) return "1 guest"
-    return `${totalGuests} guests`
+  const handleGuestChange = (type, increment) => {
+    setGuests((prevGuests) => {
+      const newGuests = { ...prevGuests }
+      if (increment) {
+        newGuests[type]++
+      } else {
+        newGuests[type]--
+      }
+      return newGuests
+    })
+    // Trigger debounced search ONLY on mobile
+    if (isMobile) {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      debounceTimeoutRef.current = setTimeout(() => {
+        handleSearch();
+      }, 500);
+    }
   }
+
+  const handleDateChange = (newCheckIn, newCheckOut) => {
+    setCheckIn(newCheckIn);
+    setCheckOut(newCheckOut);
+    if (isMobile && newCheckIn && newCheckOut) {
+      handleSearch(); // Trigger search once both dates are selected for mobile
+    }
+  };
 
   const formatDate = (date) => {
     if (!date) return ""
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-    })
+    const d = new Date(date)
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" })
   }
 
   const getWhenText = () => {
     if (calendarView === "flexible") {
-      if (stayDuration === "month") {
-        return `Month in ${monthNames[selectedMonth]}`
-      } else if (stayDuration === "week") {
-        return "Any week"
-      } else if (stayDuration === "weekend") {
-        return "Any weekend"
+      switch (stayDuration) {
+        case "weekend":
+          return "Weekend"
+        case "week":
+          return "Week"
+        case "month":
+          const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+          return monthNames[selectedMonth]
+        default:
+          return "Add dates"
+      }
+    } else {
+      if (checkIn && checkOut) {
+        return `${formatDate(checkIn)} - ${formatDate(checkOut)}`
+      } else if (checkIn) {
+        return `Check-in: ${formatDate(checkIn)}`
+      } else {
+        return "Add dates"
       }
     }
-
-    if (checkIn && dateFlexibility !== "exact") {
-      return `${formatDate(checkIn)} ±${dateFlexibility}`
-    }
-
-    if (checkIn && checkOut) {
-      return `${formatDate(checkIn)} - ${formatDate(checkOut)}`
-    }
-
-    if (checkIn) {
-      return formatDate(checkIn)
-    }
-
-    return "Add dates"
   }
 
-  const generateCalendar = (year, month) => {
-    const firstDay = new Date(year, month, 1)
-    const lastDay = new Date(year, month + 1, 0)
-    const daysInMonth = lastDay.getDate()
-    const startingDayOfWeek = firstDay.getDay()
-
-    const days = []
-
-    // Add empty cells for days before the first day of the month
-    for (let i = 0; i < startingDayOfWeek; i++) {
-      days.push(null)
-    }
-
-    // Add days of the month
-    for (let day = 1; day <= daysInMonth; day++) {
-      days.push(new Date(year, month, day))
-    }
-
-    return days
+  const formatGuestText = () => {
+    const parts = []
+    if (guests.adults > 0) parts.push(`${guests.adults} adult${guests.adults > 1 ? "s" : ""}`)
+    if (guests.children > 0) parts.push(`${guests.children} child${guests.children > 1 ? "ren" : ""}`)
+    if (guests.infants > 0) parts.push(`${guests.infants} infant${guests.infants > 1 ? "s" : ""}`)
+    if (guests.pets > 0) parts.push(`${guests.pets} pet${guests.pets > 1 ? "s" : ""}`)
+    return parts.length > 0 ? parts.join(", ") : "Add guests"
   }
 
-  const handleDateClick = (date) => {
-    if (!checkIn || (checkIn && checkOut)) {
-      setCheckIn(date)
-      setCheckOut(null)
-    } else if (checkIn && !checkOut && date > checkIn) {
-      setCheckOut(date)
-    } else {
-      setCheckIn(date)
-      setCheckOut(null)
-    }
-  }
-
-  const isDateInRange = (date) => {
-    if (!checkIn || !checkOut) return false
-    return date >= checkIn && date <= checkOut
-  }
-
-  const isDateSelected = (date) => {
-    return (checkIn && date.getTime() === checkIn.getTime()) || (checkOut && date.getTime() === checkOut.getTime())
-  }
-
-  const currentDate = new Date()
-  const currentMonth = currentDate.getMonth()
-  const currentYear = currentDate.getFullYear()
-  const nextMonth = currentMonth === 11 ? 0 : currentMonth + 1
-  const nextYear = currentMonth === 11 ? currentYear + 1 : currentYear
-
-  const monthNames = [
-    "January",
-    "February",
-    "March",
-    "April",
-    "May",
-    "June",
-    "July",
-    "August",
-    "September",
-    "October",
-    "November",
-    "December",
-  ]
-
-  const getStayDurationTitle = () => {
-    if (stayDuration === "month") return "Stay for a month"
-    if (stayDuration === "week") return "Stay for a week"
-    return "Stay for a weekend"
-  }
-
-  const getGoTitle = () => {
-    if (stayDuration === "month") return `Go in ${monthNames[selectedMonth]}`
-    return "Go anytime"
-  }
-
-  const renderIcon = (iconName) => {
-    const iconProps = {
-      width: "20",
-      height: "20",
-      viewBox: "0 0 24 24",
-      fill: "none",
-      stroke: "currentColor",
-      strokeWidth: "2",
-    }
-
-    switch (iconName) {
-      case "navigation":
-        return (
-          <svg {...iconProps}>
-            <polygon points="3,11 22,2 13,21 11,13 3,11"></polygon>
-          </svg>
-        )
-      case "building":
-        return (
-          <svg {...iconProps}>
-            <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"></path>
-            <path d="M6 12h12"></path>
-            <path d="M6 8h12"></path>
-            <path d="M6 16h12"></path>
-          </svg>
-        )
-      case "building-2":
-        return (
-          <svg {...iconProps}>
-            <path d="M3 21h18"></path>
-            <path d="M5 21V7l8-4v18"></path>
-            <path d="M19 21V11l-6-4"></path>
-          </svg>
-        )
-      case "anchor":
-        return (
-          <svg {...iconProps}>
-            <circle cx="12" cy="5" r="3"></circle>
-            <line x1="12" y1="22" x2="12" y2="8"></line>
-            <path d="M5 12H2a10 10 0 0 0 20 0h-3"></path>
-          </svg>
-        )
-      case "home":
-        return (
-          <svg {...iconProps}>
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-            <polyline points="9,22 9,12 15,12 15,22"></polyline>
-          </svg>
-        )
-      case "briefcase":
-        return (
-          <svg {...iconProps}>
-            <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
-            <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
-          </svg>
-        )
-      case "waves":
-        return (
-          <svg {...iconProps}>
-            <path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-            <path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-            <path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path>
-          </svg>
-        )
-      case "mountain":
-        return (
-          <svg {...iconProps}>
-            <path d="M8 3l4 8 5-5 5 15H2L8 3z"></path>
-          </svg>
-        )
-      case "trees":
-        return (
-          <svg {...iconProps}>
-            <path d="M12 1v6m0 6v6"></path>
-            <path d="M17 5a5 5 0 0 0-10 0c0 6 2 8 5 8s5-2 5-8"></path>
-            <path d="M20 10a2 2 0 0 0-4 0c0 3 1 4 2 4s2-1 2-4z"></path>
-            <path d="M8 10a2 2 0 0 0-4 0c0 3 1 4 2 4s2-1 2-4z"></path>
-          </svg>
-        )
-      default:
-        return (
-          <svg {...iconProps}>
-            <circle cx="11" cy="11" r="8"></circle>
-            <path d="m21 21-4.35-4.35"></path>
-          </svg>
-        )
-    }
-  }
+  const totalGuests = guests.adults + guests.children + guests.infants + guests.pets
 
   return (
-    <>
-      <div className="searchbar-bg"> {/* Added the background image class */}
-        <div className="search-container">
-          <div className="search-bar">
-            {/* Location Section */}
+    <div className="searchbar-bg">
+      <div className="search-container">
+        {isMobile ? (
+          <div className="search-bar mobile-grid" style={{ display: "grid", gridTemplateRows: "1fr 1fr", gridTemplateColumns: "1fr 1fr", gap: "12px", width: "100%" }}>
+            {/* First row: Where */}
+            <div style={{ gridColumn: "1 / span 2" }}>
+              <div
+                className={`search-section ${activeSection === "location" ? "active" : ""}`}
+                onClick={() => setActiveSection(activeSection === "location" ? null : "location")}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
+              >
+                <div className="section-content" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <label style={{ textAlign: "center" }}>Where</label>
+                  <input
+                    type="text"
+                    placeholder="Search destinations"
+                    value={location}
+                    onChange={(e) => handleLocationSearch(e.target.value)}
+                    className="location-input"
+                    style={{ textAlign: "center" }}
+                  />
+                </div>
+              </div>
+            </div>
+            {/* Second row: When and Who */}
+            <div>
+              {calendarView === "flexible" ? (
+                <div
+                  className={`search-section when-section ${activeSection === "when" ? "active" : ""}`}
+                  onClick={() => setActiveSection(activeSection === "when" ? null : "when")}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
+                >
+                  <div className="section-content" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <label style={{ textAlign: "center" }}>When</label>
+                    <span className="date-text" style={{ textAlign: "center" }}>{getWhenText()}</span>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={`search-section when-section ${(activeSection === "checkin" || activeSection === "checkout") ? "active" : ""}`}
+                  onClick={() => setActiveSection(activeSection === "checkin" ? "checkout" : "checkin")}
+                  style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
+                >
+                  <div className="section-content" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <label style={{ textAlign: "center" }}>When</label>
+                    <span className="date-text" style={{ textAlign: "center" }}>
+                      {checkIn && checkOut
+                        ? `${formatDate(checkIn)} - ${formatDate(checkOut)}`
+                        : checkIn
+                          ? formatDate(checkIn)
+                          : "Add dates"}
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div>
+              <div
+                className={`search-section guests-section ${activeSection === "guests" ? "active" : ""}`}
+                onClick={() => setActiveSection(activeSection === "guests" ? null : "guests")}
+                style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}
+              >
+                <div className="section-content" style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                  <label style={{ textAlign: "center" }}>Who</label>
+                  <span className="guest-text" style={{ textAlign: "center" }}>{totalGuests > 0 ? formatGuestText() : "Add guests"}</span>
+                </div>
+              </div>
+            </div>
+            {/* Search button removed here for mobile, auto-search from popups will handle it */}
+          </div>
+
+        ) : (
+          <div className="search-bar desktop-grid">
             <div
               className={`search-section ${activeSection === "location" ? "active" : ""}`}
               onClick={() => setActiveSection(activeSection === "location" ? null : "location")}
@@ -361,59 +346,22 @@ export default function SearchBar({ location, setLocation }) {
                   type="text"
                   placeholder="Search destinations"
                   value={location}
-                  onChange={(e) => handleLocationSearch(e.target.value)}
+                  onChange={(e) => setLocation(e.target.value)} // Direct update, no auto-search here
                   className="location-input"
                 />
               </div>
             </div>
-
-            <div className="divider"></div>
-
-            {/* When Section - Combined Check-in/Check-out for flexible view */}
-            {calendarView === "flexible" ? (
-              <div
-                className={`search-section when-section ${activeSection === "when" ? "active" : ""}`}
-                onClick={() => setActiveSection(activeSection === "when" ? null : "when")}
-              >
-                <div className="section-content">
-                  <label>When</label>
-                  <span className="date-text">{getWhenText()}</span>
-                </div>
-              </div>
-            ) : (
-              <>
-                {/* Check-in Section */}
-                <div
-                  className={`search-section ${activeSection === "checkin" ? "active" : ""}`}
-                  onClick={() => setActiveSection(activeSection === "checkin" ? null : "checkin")}
-                >
-                  <div className="section-content">
-                    <label>Check in</label>
-                    <span className="date-text">{checkIn ? formatDate(checkIn) : "Add dates"}</span>
-                  </div>
-                </div>
-
-                <div className="divider"></div>
-
-                {/* Check-out Section */}
-                <div
-                  className={`search-section ${activeSection === "checkout" ? "active" : ""}`}
-                  onClick={() => setActiveSection(activeSection === "checkout" ? null : "checkout")}
-                >
-                  <div className="section-content">
-                    <label>Check out</label>
-                    <span className="date-text">{checkOut ? formatDate(checkOut) : "Add dates"}</span>
-                  </div>
-                </div>
-              </>
-            )
-            }
-
-            <div className="divider"></div>
-
-            {/* Guests Section */}
             <div
-              className={`search-section guests-section ${activeSection === "guests" ? "active" : ""}`}
+              className={`search-section ${activeSection === "when" ? "active" : ""}`}
+              onClick={() => setActiveSection(activeSection === "when" ? null : "when")}
+            >
+              <div className="section-content">
+                <label>When</label>
+                <span className="date-text">{getWhenText()}</span>
+              </div>
+            </div>
+            <div
+              className={`search-section ${activeSection === "guests" ? "active" : ""}`}
               onClick={() => setActiveSection(activeSection === "guests" ? null : "guests")}
             >
               <div className="section-content">
@@ -421,295 +369,192 @@ export default function SearchBar({ location, setLocation }) {
                 <span className="guest-text">{totalGuests > 0 ? formatGuestText() : "Add guests"}</span>
               </div>
             </div>
-            <div className="divider"></div>
-            <button
-              className="search-button"
-              onClick={handleSearch}
-              tabIndex={0}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") handleSearch()
-              }}
-            >
+            {/* Explicit search button for desktop */}
+            <button className="search-button" onClick={handleSearch}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8"></circle>
                 <path d="m21 21-4.35-4.35"></path>
               </svg>
+              {totalGuests > 0 && <span>Search</span>}
             </button>
-          </div >
+          </div>
+        )}
 
-          {/* Location Dropdown */}
-          {
-            activeSection === "location" && (
-              <div className="location-dropdown">
-                <div className="location-header">
-                  <h3>Suggested destinations</h3>
+        {/* Mobile Popups (rendered conditionally based on activeSection) */}
+        {activeSection === "location" && isMobile && (
+          <div className="mobile-popup-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "#fff", zIndex: 1000, overflowY: "auto" }}>
+            <div className="location-header" style={{ padding: "24px 16px 8px" }}>
+              <h3>Suggested destinations</h3>
+            </div>
+            <div className="destinations-list">
+              {filteredDestinations.map((destination) => (
+                <div
+                  key={destination.id}
+                  className="destination-item"
+                  onClick={() => handleDestinationSelect(destination)} // Search on select for mobile
+                  style={{ padding: "16px", borderBottom: "1px solid #eee", display: "flex", alignItems: "center", cursor: "pointer" }}
+                >
+                  <div className="destination-icon">{renderIcon(destination.icon)}</div>
+                  <div className="destination-info" style={{ marginLeft: "12px" }}>
+                    <div className="destination-name">{destination.name}</div>
+                    <div className="destination-description">{destination.description}</div>
+                  </div>
                 </div>
-                <div className="destinations-list">
-                  {filteredDestinations.map((destination) => (
-                    <div
-                      key={destination.id}
-                      className="destination-item"
-                      onClick={() => handleDestinationSelect(destination)}
-                    >
-                      <div className="destination-icon">{renderIcon(destination.icon)}</div>
-                      <div className="destination-info">
-                        <div className="destination-name">{destination.name}</div>
-                        <div className="destination-description">{destination.description}</div>
-                      </div>
-                    </div>
-                  ))}
+              ))}
+            </div>
+            {/* Close button that doesn't trigger search, because selection already did */}
+            <button className="close-popup" style={{ position: "absolute", top: 12, right: 16 }} onClick={() => setActiveSection(null)}>Close</button>
+          </div>
+        )}
+        {(activeSection === "checkin" || activeSection === "checkout" || activeSection === "when") && isMobile && (
+          <div className="mobile-popup-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "#fff", zIndex: 1000, overflowY: "auto" }}>
+            <div className="calendar-tabs" style={{ padding: "24px 16px 8px" }}>
+              <button
+                className={`calendar-tab ${calendarView === "dates" ? "active" : ""}`}
+                onClick={() => setCalendarView("dates")}
+              >
+                Dates
+              </button>
+              <button
+                className={`calendar-tab ${calendarView === "flexible" ? "active" : ""}`}
+                onClick={() => setCalendarView("flexible")}
+              >
+                Flexible
+              </button>
+            </div>
+            <div style={{ padding: "16px" }}>
+              {calendarView === "dates" && (
+                <div>
+                  <p>Date picker goes here for precise dates.</p>
+                  {/* Simulate date selection and trigger search on mobile */}
+                  <input type="date" onChange={(e) => handleDateChange(e.target.value, checkOut)} />
+                  <input type="date" onChange={(e) => handleDateChange(checkIn, e.target.value)} />
+                  <p>Selected: {checkIn ? formatDate(checkIn) : "None"} to {checkOut ? formatDate(checkOut) : "None"}</p>
+                  <button onClick={() => { setCheckIn(null); setCheckOut(null); }}>Clear Dates</button>
+                  {/* Apply button triggers search on mobile */}
+                  <button onClick={() => { setActiveSection(null); handleSearch(); }}>Apply</button>
                 </div>
+              )}
+              {calendarView === "flexible" && (
+                <div>
+                  <p>Flexible date options go here.</p>
+                  <label htmlFor="stayDuration">Stay Duration:</label>
+                  <select id="stayDuration" value={stayDuration} onChange={(e) => { setStayDuration(e.target.value); if (isMobile) handleSearch(); }}>
+                    <option value="weekend">Weekend</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                  </select>
+                  {stayDuration === "month" && (
+                    <>
+                      <label htmlFor="selectedMonth">Select Month:</label>
+                      <select id="selectedMonth" value={selectedMonth} onChange={(e) => { setSelectedMonth(Number(e.target.value)); if (isMobile) handleSearch(); }}>
+                        {Array.from({ length: 12 }).map((_, i) => (
+                          <option key={i} value={i}>{new Date(2025, i).toLocaleString('en-US', { month: 'long' })}</option>
+                        ))}
+                      </select>
+                    </>
+                  )}
+                  <label htmlFor="dateFlexibility">Date Flexibility:</label>
+                  <select id="dateFlexibility" value={dateFlexibility} onChange={(e) => { setDateFlexibility(e.target.value); if (isMobile) handleSearch(); }}>
+                    <option value="0">Exact dates</option>
+                    <option value="1">+- 1 day</option>
+                    <option value="2">+- 2 days</option>
+                    <option value="7">+- 7 days</option>
+                  </select>
+                  {/* Apply button triggers search on mobile */}
+                  <button onClick={() => { setActiveSection(null); handleSearch(); }}>Apply</button>
+                </div>
+              )}
+            </div>
+
+            <button className="close-popup" style={{ position: "absolute", top: 12, right: 16 }} onClick={() => setActiveSection(null)}>Close</button>
+          </div>
+        )}
+        {activeSection === "guests" && isMobile && (
+          <div className="mobile-popup-overlay" style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "#fff", zIndex: 1000, overflowY: "auto" }}>
+            <div style={{ padding: "24px 16px 8px" }}>
+              <h3>Guests</h3>
+            </div>
+            <div className="guest-row" style={{ padding: "16px", borderBottom: "1px solid #eee", display: "flex", alignItems: "center" }}>
+              <div className="guest-info">
+                <span className="guest-type">Adults</span>
               </div>
-            )
-          }
-
-          {/* Calendar Dropdown */}
-          {
-            (activeSection === "checkin" || activeSection === "checkout" || activeSection === "when") && (
-              <div className="calendar-dropdown">
-                <div className="calendar-tabs">
-                  <button
-                    className={`calendar-tab ${calendarView === "dates" ? "active" : ""}`}
-                    onClick={() => setCalendarView("dates")}
-                  >
-                    Dates
-                  </button>
-                  <button
-                    className={`calendar-tab ${calendarView === "flexible" ? "active" : ""}`}
-                    onClick={() => setCalendarView("flexible")}
-                  >
-                    Flexible
-                  </button>
-                </div >
-
-                {calendarView === "dates" && (
-                  <>
-                    <div className="calendar-grid-container">
-                      <div className="calendar-month">
-                        <h3 className="month-title">
-                          {monthNames[currentMonth]} {currentYear}
-                        </h3>
-                        <div className="calendar-grid">
-                          <div className="day-headers">
-                            {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
-                              <div key={index} className="day-header">
-                                {day}
-                              </div>
-                            ))}
-                          </div>
-                          <div className="days-grid">
-                            {generateCalendar(currentYear, currentMonth).map((date, index) => (
-                              <div
-                                key={index}
-                                className={`calendar-day ${date ? "clickable" : "empty"} ${date && isDateSelected(date) ? "selected" : ""
-                                  } ${date && isDateInRange(date) ? "in-range" : ""} ${date && date < currentDate ? "past" : ""
-                                  }`}
-                                onClick={() => date && date >= currentDate && handleDateClick(date)}
-                              >
-                                {date ? date.getDate() : ""}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="calendar-month">
-                        <h3 className="month-title">
-                          {monthNames[nextMonth]} {nextYear}
-                        </h3>
-                        <div className="calendar-grid">
-                          <div className="day-headers">
-                            {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
-                              <div key={index} className="day-header">
-                                {day}
-                              </div>
-                            ))}
-                          </div>
-                          <div className="days-grid">
-                            {generateCalendar(nextYear, nextMonth).map((date, index) => (
-                              <div
-                                key={index}
-                                className={`calendar-day ${date ? "clickable" : "empty"} ${date && isDateSelected(date) ? "selected" : ""
-                                  } ${date && isDateInRange(date) ? "in-range" : ""}`}
-                                onClick={() => date && handleDateClick(date)}
-                              >
-                                {date ? date.getDate() : ""}
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Date Flexibility Options */}
-                    <div className="date-flexibility">
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "exact" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("exact")}
-                      >
-                        Exact dates
-                      </button>
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "1" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("1")}
-                      >
-                        ± 1 day
-                      </button >
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "2" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("2")}
-                      >
-                        ± 2 days
-                      </button>
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "3" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("3")}
-                      >
-                        ± 3 days
-                      </button>
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "7" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("7")}
-                      >
-                        ± 7 days
-                      </button>
-                      <button
-                        className={`flexibility-option ${dateFlexibility === "14" ? "active" : ""}`}
-                        onClick={() => setDateFlexibility("14")}
-                      >
-                        ± 14 days
-                      </button>
-                    </div >
-                  </>
-                )
-                }
-
-                {
-                  calendarView === "flexible" && (
-                    <div className="flexible-view">
-                      <div className="stay-duration-section">
-                        <h3 className="section-title">{getStayDurationTitle()}</h3>
-                        <div className="duration-options">
-                          <button
-                            className={`duration-option ${stayDuration === "weekend" ? "active" : ""}`}
-                            onClick={() => setStayDuration("weekend")}
-                          >
-                            Weekend
-                          </button>
-                          <button
-                            className={`duration-option ${stayDuration === "week" ? "active" : ""}`}
-                            onClick={() => setStayDuration("week")}
-                          >
-                            Week
-                          </button>
-                          <button
-                            className={`duration-option ${stayDuration === "month" ? "active" : ""}`}
-                            onClick={() => setStayDuration("month")}
-                          >
-                            Month
-                          </button>
-                        </div >
-                      </div >
-
-                      <div className="month-selection-section">
-                        <h3 className="section-title">{getGoTitle()}</h3>
-                        <div className="month-cards-container">
-                          <div className="month-cards">
-                            {[6, 7, 8, 9, 10, 11].map((monthIndex) => (
-                              <div
-                                key={monthIndex}
-                                className={`month-card ${stayDuration === "month" && selectedMonth === monthIndex ? "selected" : ""
-                                  }`}
-                                onClick={() => setSelectedMonth(monthIndex)}
-                              >
-                                <div className="month-icon">
-                                  <svg
-                                    width="24"
-                                    height="24"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="1.5"
-                                  >
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                                  </svg>
-                                </div>
-                                <div className="month-name">{monthNames[monthIndex]}</div>
-                                <div className="month-year">2025</div>
-                              </div>
-                            ))}
-                          </div>
-                          <button className="month-nav-arrow">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                              <polyline points="9,18 15,12 9,6"></polyline>
-                            </svg>
-                          </button>
-                        </div>
-                      </div>
-                    </div >
-                  )
-                }
-              </div >
-            )}
-
-          {/* Guest Dropdown */}
-          {
-            activeSection === "guests" && (
-              <div className="guests-dropdown">
-                <div className="guest-row">
-                  <div className="guest-info">
-                    <span className="guest-type">Adults</span>
-                    {/* <span className="guest-description">Ages 13 or above</span> */}
-                  </div>
-                  <div className="guest-controls">
-                    <button
-                      className="guest-button"
-                      onClick={() => handleGuestChange("adults", false)}
-                      disabled={guests.adults <= 1}
-                    >
-                      -
-                    </button>
-                    <span className="guest-count">{guests.adults}</span>
-                    <button className="guest-button" onClick={() => handleGuestChange("adults", true)}>
-                      +
-                    </button>
-                  </div>
-                </div>
-
-                <div className="guest-row">
-                  <div className="guest-info">
-                    <span className="guest-type">Children</span>
-                    {/* <span className="guest-description">Ages 2-12</span> */}
-                  </div>
-                  <div className="guest-controls">
-                    <button
-                      className="guest-button"
-                      onClick={() => handleGuestChange("children", false)}
-                      disabled={guests.children <= 0}
-                    >
-                      -
-                    </button>
-                    <span className="guest-count">{guests.children}</span>
-                    <button className="guest-button" onClick={() => handleGuestChange("children", true)}>
-                      +
-                    </button>
-                  </div>
-                </div>
-
-
-
-
+              <div className="guest-controls" style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+                <button
+                  className="guest-button"
+                  onClick={() => handleGuestChange("adults", false)}
+                  disabled={guests.adults <= 1}
+                >
+                  -
+                </button>
+                <span className="guest-count" style={{ margin: "0 8px" }}>{guests.adults}</span>
+                <button className="guest-button" onClick={() => handleGuestChange("adults", true)}>
+                  +
+                </button>
               </div>
-            )
-          }
-        </div >
+            </div>
+            <div className="guest-row" style={{ padding: "16px", borderBottom: "1px solid #eee", display: "flex", alignItems: "center" }}>
+              <div className="guest-info">
+                <span className="guest-type">Children</span>
+              </div>
+              <div className="guest-controls" style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+                <button
+                  className="guest-button"
+                  onClick={() => handleGuestChange("children", false)}
+                  disabled={guests.children <= 0}
+                >
+                  -
+                </button>
+                <span className="guest-count" style={{ margin: "0 8px" }}>{guests.children}</span>
+                <button className="guest-button" onClick={() => handleGuestChange("children", true)}>
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="guest-row" style={{ padding: "16px", borderBottom: "1px solid #eee", display: "flex", alignItems: "center" }}>
+              <div className="guest-info">
+                <span className="guest-type">Infants</span>
+              </div>
+              <div className="guest-controls" style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+                <button
+                  className="guest-button"
+                  onClick={() => handleGuestChange("infants", false)}
+                  disabled={guests.infants <= 0}
+                >
+                  -
+                </button>
+                <span className="guest-count" style={{ margin: "0 8px" }}>{guests.infants}</span>
+                <button className="guest-button" onClick={() => handleGuestChange("infants", true)}>
+                  +
+                </button>
+              </div>
+            </div>
+            <div className="guest-row" style={{ padding: "16px", borderBottom: "1px solid #eee", display: "flex", alignItems: "center" }}>
+              <div className="guest-info">
+                <span className="guest-type">Pets</span>
+              </div>
+              <div className="guest-controls" style={{ marginLeft: "auto", display: "flex", alignItems: "center" }}>
+                <button
+                  className="guest-button"
+                  onClick={() => handleGuestChange("pets", false)}
+                  disabled={guests.pets <= 0}
+                >
+                  -
+                </button>
+                <span className="guest-count" style={{ margin: "0 8px" }}>{guests.pets}</span>
+                <button className="guest-button" onClick={() => handleGuestChange("pets", true)}>
+                  +
+                </button>
+              </div>
+            </div>
+            {/* Close button triggers search on mobile */}
+            <button className="close-popup" style={{ position: "absolute", top: 12, right: 16 }} onClick={() => { setActiveSection(null); handleSearch(); }}>Close</button>
+          </div>
+        )}
 
-        {/* Overlay */}
-        {activeSection && <div className="overlay" onClick={() => setActiveSection(null)}></div>}
-      </div >
-    </>
+        {/* Overlay for desktop */}
+        {!isMobile && activeSection && <div className="overlay" onClick={() => setActiveSection(null)}></div>}
+      </div>
+    </div>
   )
 }

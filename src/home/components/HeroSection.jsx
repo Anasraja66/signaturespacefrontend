@@ -4,19 +4,52 @@
 import { useEffect, useState } from "react"
 import SearchBar from "../../Searchbar/search-bar"
 import headerVideo from "../../assets/header-bg.mp4"
-import "../styles/HeroSection.css"
+import "../styles/HeroSection.css" // Make sure this CSS file is updated
 
 export default function HeroSection() {
   const [isLoaded, setIsLoaded] = useState(false)
+  const [currentTextIndex, setCurrentTextIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false) // New state for animation trigger
+
+  // The texts for the rotating animation
+  const rotatingTexts = [
+    "Anytime, Anywhere",
+    "For Every Journey",
+    "Your Ideal Escape",
+    "With Ease & Confidence",
+  ]
 
   useEffect(() => {
     // Trigger animations immediately when component mounts
-    const timer = setTimeout(() => {
+    const loadTimer = setTimeout(() => {
       setIsLoaded(true)
     }, 100) // Small delay to ensure smooth animation start
 
-    return () => clearTimeout(timer)
-  }, [])
+    // Set up the interval for text rotation
+    const textInterval = setInterval(() => {
+      setIsAnimating(false); // Reset animation state to trigger re-animation
+      setTimeout(() => {
+        setCurrentTextIndex((prevIndex) =>
+          (prevIndex + 1) % rotatingTexts.length
+        );
+        setIsAnimating(true); // Start animation after text updates
+      }, 50); // Small delay to allow CSS reset before re-animating
+
+    }, 3000); // Change text every 3 seconds (adjust as needed)
+
+    return () => {
+      clearTimeout(loadTimer);
+      clearInterval(textInterval); // Clean up the interval on unmount
+    };
+  }, [rotatingTexts.length]); // Add rotatingTexts.length to dependencies
+
+  // Trigger initial animation for the rotating text when first loaded
+  useEffect(() => {
+    if (isLoaded) {
+      setIsAnimating(true);
+    }
+  }, [isLoaded]);
+
 
   return (
     <section className="hero">
@@ -53,8 +86,10 @@ export default function HeroSection() {
             <span className={`hero-title-line ${isLoaded ? "animate" : ""}`} style={{ animationDelay: "0.2s" }}>
               Find Your Perfect Stay,
             </span>
-            <span className={`hero-title-line ${isLoaded ? "animate" : ""}`} style={{ animationDelay: "0.5s" }}>
-              Anytime, Anywhere.
+            <span
+              className={`hero-rotating-text ${isAnimating ? "animate-3d" : ""}`}
+            >
+              {rotatingTexts[currentTextIndex]}
             </span>
           </h1>
           {/* <p className={`hero-subtitle ${isLoaded ? "animate" : ""}`} style={{ animationDelay: "0.8s" }}>

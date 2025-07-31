@@ -1,3 +1,12 @@
+/* Hide map section on mobile screens */
+@media (max-width: 768px) {
+
+  .map-static,
+  .map-section {
+    display: none !important;
+  }
+}
+
 .search-container {
   position: relative;
   max-width: 850px;
@@ -447,7 +456,6 @@
     width: 95%;
     height: 40px;
     border-radius: 20px;
-    margin-top: 10px;
   }
 
   .guests-section {
@@ -665,7 +673,7 @@
 /* Updated styles to remove top margin and center align the search bar */
 .searchbar-bg {
   /* height: 100vh; */
-  margin-top: -30px;
+  margin-bottom: 15px;
   width: 100%;
   background-size: cover;
   background-position: center;

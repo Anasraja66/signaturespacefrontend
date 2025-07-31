@@ -77,9 +77,9 @@ export default function RentalsSection({ activeRentalTab, setActiveRentalTab }) 
 
   const formatPrice = (price, currency, type) => {
     if (type === "monthly") {
-      return `From ${currency} ${price}/month`
+      return `From ${currency} ${price}/month`;
     }
-    return `From ${currency} ${price}`
+    return `From ${currency} ${price}`;
   }
 
   const toggleFavorite = (propertyId) => {
@@ -135,26 +135,56 @@ export default function RentalsSection({ activeRentalTab, setActiveRentalTab }) 
                 <div
                   key={property.id}
                   className={`rental-card animate-card ${gridVisible ? "visible" : ""}`}
-                  style={{ transitionDelay: `${getItemDelay(index)}ms`, minWidth: 280, maxWidth: 320, margin: "0 12px", borderRadius: 16, boxShadow: "0 2px 12px #0001", background: "#fff" }}
+                  style={{ transitionDelay: `${getItemDelay(index)}ms` }}
                 >
-                  <div className="rental-image-container" style={{ position: "relative", borderRadius: 12, overflow: "hidden" }}>
+                  <div className="rental-image-container">
+                    <button
+                      className="carousel-btn left"
+                      onClick={() => handleImageNavigation(property.id, "prev")}
+                      disabled={
+                        !property.images ||
+                        property.images.length <= 1 ||
+                        (rentalImageIndexes[property.id] || 0) === 0
+                      }
+                      aria-label="Previous image"
+                    >
+                      <ChevronLeft size={24} />
+                    </button>
                     <img
-                      src={imageSrc}
+                      src={
+                        property.images && property.images.length > 0
+                          ? property.images[rentalImageIndexes[property.id] || 0]
+                          : "/placeholder.svg?height=240&width=320&query=property"
+                      }
                       alt={property.title}
-                      style={{ width: "100%", height: "180px", objectFit: "cover" }}
+                      className="rental-image"
                     />
+                    <button
+                      className="carousel-btn right"
+                      onClick={() => handleImageNavigation(property.id, "next")}
+                      disabled={
+                        !property.images ||
+                        property.images.length <= 1 ||
+                        (rentalImageIndexes[property.id] || 0) === property.images.length - 1
+                      }
+                      aria-label="Next image"
+                    >
+                      <ChevronRight size={24} />
+                    </button>
+                    {property.images && property.images.length > 1 && (
+                      <div className="carousel-indicator">
+                        {(rentalImageIndexes[property.id] || 0) + 1} / {property.images.length}
+                      </div>
+                    )}
                   </div>
-                  <div className="rental-info" style={{ padding: "16px" }}>
-                    <div style={{ fontWeight: "bold", fontSize: "1.1rem", marginBottom: 4 }}>{property.title}</div>
-                    <div style={{ color: "#888", fontSize: "0.95rem", marginBottom: 8 }}>{property.type}</div>
-                    <div style={{ display: "flex", gap: 12, marginBottom: 8 }}>
-                      <span>💰 {formatPrice(property.price, property.currency || "PKR", property.type)}</span>
-                      <span>🛏 {property.bedrooms} BR</span>
-                      <span>🛁 {property.bathrooms} Bath</span>
+                  <div className="rental-info">
+                    <div className="rental-title">{property.title}</div>
+                    <div className="rental-type">{property.type} | {property.bedrooms} Bedrooms | {property.bathrooms} Bathrooms</div>
+                    <div className="rental-details">
+                      <span style={{ color: "#cba135", fontSize: "1.4rem", fontWeight: "bold" }}>{formatPrice(property.price, property.currency || "AED", property.type)}</span>
                     </div>
                     <button
                       className="view-deal-btn"
-                      style={{ background: "#cba135", color: "#fff", borderRadius: 8, padding: "8px 16px", fontWeight: 500, marginTop: 8 }}
                       onClick={() => navigate("/property-details", { state: { property } })}
                     >
                       View deal
@@ -179,5 +209,5 @@ export default function RentalsSection({ activeRentalTab, setActiveRentalTab }) 
         )}
       </div>
     </section>
-  )
+  );
 }

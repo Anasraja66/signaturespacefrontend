@@ -16,47 +16,47 @@ function BookingCard({ data }) {
   const [error, setError] = useState("")
 
   // Handle form field changes
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
-  }
+  // const handleChange = (e) => {
+  //   const { name, value } = e.target
+  //   setForm((prev) => ({ ...prev, [name]: value }))
+  // }
 
-  // Handle booking form submit
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setLoading(true)
-    setSuccess("")
-    setError("")
-    try {
-      const res = await fetch("http://localhost:8000/api/bookings/", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          property: data.id || data.propertyId || 1,
-          user_name: form.user_name,
-          user_email: form.user_email,
-          user_phone: form.user_phone,
-          guests: form.guests,
-          check_in_date: form.check_in_date,
-          check_out_date: form.check_out_date,
-        }),
-      })
-      if (!res.ok) throw new Error("Booking failed")
-      setSuccess("Booking successful! Check your email for confirmation.")
-      setForm({
-        user_name: "",
-        user_email: "",
-        user_phone: "",
-        guests: data.guests || 1,
-        check_in_date: data.checkIn || "",
-        check_out_date: data.checkOut || "",
-      })
-    } catch (err) {
-      setError("Booking failed. Please try again.")
-    } finally {
-      setLoading(false)
-    }
-  }
+  // // Handle booking form submit
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault()
+  //   setLoading(true)
+  //   setSuccess("")
+  //   setError("")
+  //   try {
+  //     const res = await fetch("http://localhost:8000/api/bookings/", {
+  //       method: "POST",
+  //       headers: { "Content-Type": "application/json" },
+  //       body: JSON.stringify({
+  //         property: data.id || data.propertyId || 1,
+  //         user_name: form.user_name,
+  //         user_email: form.user_email,
+  //         user_phone: form.user_phone,
+  //         guests: form.guests,
+  //         check_in_date: form.check_in_date,
+  //         check_out_date: form.check_out_date,
+  //       }),
+  //     })
+  //     if (!res.ok) throw new Error("Booking failed")
+  //     setSuccess("Booking successful! Check your email for confirmation.")
+  //     setForm({
+  //       user_name: "",
+  //       user_email: "",
+  //       user_phone: "",
+  //       guests: data.guests || 1,
+  //       check_in_date: data.checkIn || "",
+  //       check_out_date: data.checkOut || "",
+  //     })
+  //   } catch (err) {
+  //     setError("Booking failed. Please try again.")
+  //   } finally {
+  //     setLoading(false)
+  //   }
+  // }
   const {
     propertyImage = "/placeholder.svg",
     propertySize = "",
@@ -136,23 +136,7 @@ function BookingCard({ data }) {
         </div>
       </div>
 
-      {/* Booking Form */}
-      <form className="booking-form" onSubmit={handleSubmit} style={{ marginTop: 24, marginBottom: 12, padding: 12, border: "1px solid #eee", borderRadius: 8 }}>
-        <h4>Book this property</h4>
-        <div style={{ marginBottom: 8 }}>
-          <input name="user_name" type="text" placeholder="Your Name" value={form.user_name} onChange={handleChange} required style={{ width: "100%", padding: 8, marginBottom: 8 }} />
-          <input name="user_email" type="email" placeholder="Email" value={form.user_email} onChange={handleChange} required style={{ width: "100%", padding: 8, marginBottom: 8 }} />
-          <input name="user_phone" type="tel" placeholder="Phone" value={form.user_phone} onChange={handleChange} required style={{ width: "100%", padding: 8, marginBottom: 8 }} />
-          <input name="guests" type="number" min="1" placeholder="Guests" value={form.guests} onChange={handleChange} required style={{ width: "100%", padding: 8, marginBottom: 8 }} />
-          <input name="check_in_date" type="date" placeholder="Check-in" value={form.check_in_date} onChange={handleChange} required style={{ width: "100%", padding: 8, marginBottom: 8 }} />
-          <input name="check_out_date" type="date" placeholder="Check-out" value={form.check_out_date} onChange={handleChange} required style={{ width: "100%", padding: 8, marginBottom: 8 }} />
-        </div>
-        <button type="submit" disabled={loading} style={{ padding: 10, width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 4 }}>
-          {loading ? "Booking..." : "Reserve"}
-        </button>
-        {success && <div style={{ color: "green", marginTop: 8 }}>{success}</div>}
-        {error && <div style={{ color: "red", marginTop: 8 }}>{error}</div>}
-      </form>
+
 
       {/* Cancellation Policy */}
       <div className="policy-section">

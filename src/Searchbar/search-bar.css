@@ -1,5 +1,6 @@
 /* Search Bar Container */
 .searchbar-bg {
+  margin-bottom: 15px;
   /* margin-top: -30px; */
   position: relative;
   width: 100%;
@@ -118,7 +119,6 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-left: 8px;
   color: white;
 }
 
@@ -998,8 +998,7 @@
     width: calc(100% - 32px);
     height: 48px;
     border-radius: 12px;
-    margin: 16px;
-    margin-top: 8px;
+
   }
 
   /* Mobile notification bar */
